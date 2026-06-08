@@ -29,10 +29,10 @@ Vytvořte soubor `.env` podle `.env.example`:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 ```
 
-Hodnoty najdete v Supabase Dashboardu v `Project Settings` -> `API`.
+Hodnoty najdete v Supabase Dashboardu v `Project Settings` -> `API`. Aplikace podporuje i starší název `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
 ## Supabase projekt
 

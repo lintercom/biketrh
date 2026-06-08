@@ -35,6 +35,8 @@ jobs:
         run: npm run build:pages
         env:
           GITHUB_PAGES: "true"
+          NEXT_PUBLIC_SUPABASE_URL: "https://rwnvphmikwacentwqhky.supabase.co"
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_v-cd2ACuOc5sJWEGvKLBKw_V0qO99pj"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
