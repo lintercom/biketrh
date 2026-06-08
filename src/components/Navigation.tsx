@@ -33,7 +33,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-white">
               <Bike className="h-5 w-5" aria-hidden="true" />
             </span>
-            BikeBazar
+            BikeTrh
           </Link>
           <nav className="flex items-center gap-1">
             {items.slice(1, 4).map((item) => {

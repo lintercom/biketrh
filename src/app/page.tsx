@@ -20,7 +20,7 @@ export default async function HomePage() {
           <div className="max-w-3xl">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold backdrop-blur">
               <Sparkles className="h-4 w-4" aria-hidden="true" />
-              BikeBazar MVP
+              BikeTrh MVP
             </p>
             <h1 className="text-4xl font-black leading-tight tracking-normal md:text-6xl">
               Jednodušší nákup a prodej cyklo komponentů z druhé ruky

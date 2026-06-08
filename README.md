@@ -1,6 +1,6 @@
-# BikeBazar MVP
+# BikeTrh MVP
 
-BikeBazar MVP je mobil-first marketplace pro nákup a prodej cyklo komponentů z druhé ruky. UX je záměrně jednoduché: rychlé vložení inzerátu, prohlížení nabídek, rezervace přes tlačítko „Mám zájem“, zprávy vázané na konkrétní inzerát a hodnocení po dokončeném obchodu.
+BikeTrh MVP je mobil-first marketplace pro nákup a prodej cyklo komponentů z druhé ruky. UX je záměrně jednoduché: rychlé vložení inzerátu, prohlížení nabídek, rezervace přes tlačítko „Mám zájem“, zprávy vázané na konkrétní inzerát a hodnocení po dokončeném obchodu.
 
 ## Technologie
 
@@ -44,8 +44,8 @@ Hodnoty najdete v Supabase Dashboardu v `Project Settings` -> `API`.
 
 Demo účty v seedu:
 
-- `martin@bikebazar.test` / `bikebazar123`
-- `tereza@bikebazar.test` / `bikebazar123`
+- `martin@biketrh.test` / `biketrh123`
+- `tereza@biketrh.test` / `biketrh123`
 
 ## Lokální Supabase
 

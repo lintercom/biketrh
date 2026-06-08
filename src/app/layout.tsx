@@ -5,7 +5,7 @@ import { getCurrentUserProfile } from "@/lib/data";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BikeBazar MVP",
+  title: "BikeTrh MVP",
   description: "Jednoduchý marketplace pro cyklo komponenty z druhé ruky."
 };
 
