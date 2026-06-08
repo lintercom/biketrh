@@ -1,0 +1,95 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
+import { CheckCircle, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
+import { ListingCard } from "@/components/ListingCard";
+import { getCurrentUserProfile, getUserListings } from "@/lib/data";
+import type { ListingStatus } from "@/lib/types";
+
+export default async function MyListingsPage() {
+  const { user } = await getCurrentUserProfile();
+
+  if (!user) {
+    redirect("/prihlaseni?next=/moje-inzeraty");
+  }
+
+  const listings = await getUserListings(user.id);
+
+  return (
+    <div className="mx-auto max-w-6xl px-5 py-6 md:px-6 md:py-10">
+      <p className="text-sm font-semibold uppercase tracking-wide text-moss">Prodej</p>
+      <h1 className="mt-1 text-3xl font-black text-ink">Moje inzeráty</h1>
+      <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-600">
+        Spravujte aktivní nabídky, skryté inzeráty i komponenty, které už jsou prodané.
+      </p>
+
+      {listings.length > 0 ? (
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {listings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              showStatus
+              actions={
+                <div className="grid grid-cols-3 gap-2">
+                  {listing.status === "hidden" ? (
+                    <ListingAction listingId={listing.id} status="active" label="Obnovit" icon={<RotateCcw className="h-4 w-4" />} />
+                  ) : (
+                    <ListingAction listingId={listing.id} status="hidden" label="Skrýt" icon={<EyeOff className="h-4 w-4" />} />
+                  )}
+                  {listing.status !== "sold" ? (
+                    <ListingAction listingId={listing.id} status="sold" label="Prodáno" icon={<CheckCircle className="h-4 w-4" />} />
+                  ) : (
+                    <ListingAction listingId={listing.id} status="active" label="Aktivní" icon={<Eye className="h-4 w-4" />} />
+                  )}
+                  <Link
+                    href={`/inzeraty/${listing.id}`}
+                    className="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-white px-2 text-xs font-semibold text-ink hover:bg-fog"
+                  >
+                    Detail
+                  </Link>
+                </div>
+              }
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-5">
+          <EmptyState
+            title="Zatím nic neprodáváte"
+            text="Přidejte první komponent a nabídka se tady objeví."
+            href="/pridat-inzerat"
+            action="Přidat inzerát"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ListingAction({
+  listingId,
+  status,
+  label,
+  icon
+}: {
+  listingId: string;
+  status: ListingStatus;
+  label: string;
+  icon: ReactNode;
+}) {
+  return (
+    <form action="#">
+      <input type="hidden" name="listing_id" value={listingId} />
+      <input type="hidden" name="status" value={status} />
+      <button
+        type="submit"
+        className="inline-flex min-h-10 w-full items-center justify-center gap-1 rounded-lg border border-line bg-white px-2 text-xs font-semibold text-ink hover:bg-fog"
+      >
+        {icon}
+        {label}
+      </button>
+    </form>
+  );
+}
