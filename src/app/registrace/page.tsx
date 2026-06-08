@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { UserPlus } from "lucide-react";
 import { ConfigNotice } from "@/components/ConfigNotice";
-import { SubmitButton } from "@/components/SubmitButton";
+import { RegistrationForm } from "./RegistrationForm";
 import { getCurrentUserProfile } from "@/lib/data";
 
-export default async function SignUpPage() {
+type PageProps = {
+  searchParams: Promise<{ chyba?: string }>;
+};
+
+export default async function SignUpPage({ searchParams }: PageProps) {
   const { user } = await getCurrentUserProfile();
+  const { chyba } = await searchParams;
 
   if (user) {
     redirect("/profil");
@@ -22,46 +26,9 @@ export default async function SignUpPage() {
         <ConfigNotice />
       </div>
 
-      <form action="#" className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
-        <div>
-          <label className="text-sm font-semibold text-ink" htmlFor="email">
-            Email
-          </label>
-          <input id="email" name="email" type="email" required autoComplete="email" className="mt-2 px-3 py-3" />
-        </div>
-        <div>
-          <label className="text-sm font-semibold text-ink" htmlFor="password">
-            Heslo
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            minLength={6}
-            autoComplete="new-password"
-            className="mt-2 px-3 py-3"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-semibold text-ink" htmlFor="display_name">
-            Zobrazované jméno
-          </label>
-          <input id="display_name" name="display_name" required minLength={2} maxLength={80} className="mt-2 px-3 py-3" />
-        </div>
-        <div>
-          <label className="text-sm font-semibold text-ink" htmlFor="city">
-            Město
-          </label>
-          <input id="city" name="city" required minLength={2} maxLength={120} className="mt-2 px-3 py-3" />
-        </div>
-        <SubmitButton pendingText="Vytvářím účet...">
-          <span className="inline-flex items-center gap-2">
-            <UserPlus className="h-4 w-4" aria-hidden="true" />
-            Registrovat
-          </span>
-        </SubmitButton>
-      </form>
+      {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
+
+      <RegistrationForm />
 
       <p className="mt-5 text-center text-sm text-zinc-600">
         Už máte účet?{" "}

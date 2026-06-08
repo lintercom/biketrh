@@ -6,6 +6,10 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import type { ListingCondition, ListingStatus, OrderStatus } from "@/lib/types";
 
+const listingConditions: ListingCondition[] = ["new", "like_new", "good", "used", "for_parts"];
+const listingStatuses: ListingStatus[] = ["active", "reserved", "sold", "hidden"];
+const orderStatuses: OrderStatus[] = ["created", "accepted", "cancelled", "completed"];
+
 function textField(formData: FormData, name: string) {
   const value = formData.get(name);
   return typeof value === "string" ? value.trim() : "";
@@ -53,6 +57,10 @@ export async function signInAction(formData: FormData) {
   const email = textField(formData, "email");
   const password = textField(formData, "password");
 
+  if (!email || !password) {
+    withError(`/prihlaseni?next=${encodeURIComponent(next)}`, "Vyplňte email a heslo.");
+  }
+
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
@@ -70,6 +78,14 @@ export async function signUpAction(formData: FormData) {
   const displayName = textField(formData, "display_name");
   const city = textField(formData, "city");
   const origin = (await headers()).get("origin") ?? "http://localhost:3000";
+
+  if (!email || !password || !displayName || !city) {
+    withError("/registrace", "Vyplňte email, heslo, zobrazované jméno a město.");
+  }
+
+  if (password.length < 6) {
+    withError("/registrace", "Heslo musí mít alespoň 6 znaků.");
+  }
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -117,6 +133,10 @@ export async function updateProfileAction(formData: FormData) {
   const displayName = textField(formData, "display_name");
   const city = textField(formData, "city");
 
+  if (!displayName || !city) {
+    withError("/profil", "Vyplňte zobrazované jméno a město.");
+  }
+
   const { error } = await supabase.from("profiles").upsert({ id: user.id, display_name: displayName, city });
 
   if (error) {
@@ -145,8 +165,8 @@ export async function createListingAction(formData: FormData) {
   const condition = textField(formData, "condition") as ListingCondition;
   const price = Math.round(Number(textField(formData, "price").replace(/\s/g, "").replace(",", ".")));
 
-  if (!title || !description || !location || Number.isNaN(price) || price < 0) {
-    withError("/pridat-inzerat", "Vyplňte název, popis, cenu a lokalitu.");
+  if (!title || !description || !location || Number.isNaN(price) || price <= 0 || !listingConditions.includes(condition)) {
+    withError("/pridat-inzerat", "Vyplňte název, popis, cenu větší než 0, stav a lokalitu.");
   }
 
   const { data: listing, error } = await supabase
@@ -208,6 +228,56 @@ export async function createListingAction(formData: FormData) {
   redirect(`/inzeraty/${listing.id}`);
 }
 
+export async function updateListingAction(formData: FormData) {
+  const listingId = textField(formData, "listing_id");
+  const title = textField(formData, "title");
+  const description = textField(formData, "description");
+  const location = textField(formData, "location");
+  const condition = textField(formData, "condition") as ListingCondition;
+  const status = textField(formData, "status") as ListingStatus;
+  const price = Math.round(Number(textField(formData, "price").replace(/\s/g, "").replace(",", ".")));
+  const path = listingId ? `/moje-inzeraty/${listingId}/upravit` : "/moje-inzeraty";
+
+  if (!listingId) {
+    withError("/moje-inzeraty", "Inzerát nebyl nalezen.");
+  }
+
+  if (
+    !title ||
+    !description ||
+    !location ||
+    Number.isNaN(price) ||
+    price <= 0 ||
+    !listingConditions.includes(condition) ||
+    !listingStatuses.includes(status)
+  ) {
+    withError(path, "Vyplňte název, popis, cenu větší než 0, stav komponentu, lokalitu a status.");
+  }
+
+  const { supabase, user } = await requireUser(path);
+  const { error } = await supabase
+    .from("listings")
+    .update({
+      title,
+      description,
+      price,
+      condition,
+      location,
+      status
+    })
+    .eq("id", listingId)
+    .eq("seller_id", user.id);
+
+  if (error) {
+    withError(path, "Inzerát se nepovedlo uložit.");
+  }
+
+  revalidatePath("/moje-inzeraty");
+  revalidatePath("/inzeraty");
+  revalidatePath(`/inzeraty/${listingId}`);
+  redirect("/moje-inzeraty?zprava=Inzerát je uložený.");
+}
+
 export async function startOrderAction(formData: FormData) {
   const listingId = textField(formData, "listing_id");
   const { supabase } = await requireUser(`/inzeraty/${listingId}`);
@@ -255,6 +325,10 @@ export async function updateOrderStatusAction(formData: FormData) {
   const orderId = textField(formData, "order_id");
   const status = textField(formData, "status") as OrderStatus;
   const { supabase } = await requireUser(`/objednavky/${orderId}`);
+
+  if (!orderId || !orderStatuses.includes(status)) {
+    withError(orderId ? `/objednavky/${orderId}` : "/moje-objednavky", "Neplatný stav objednávky.");
+  }
 
   const { error } = await supabase.rpc("set_order_status", {
     p_order_id: orderId,

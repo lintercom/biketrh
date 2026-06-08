@@ -4,11 +4,17 @@ import { List, LogOut, Save, ShoppingBag, Star } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { ConfigNotice } from "@/components/ConfigNotice";
 import { SubmitButton } from "@/components/SubmitButton";
+import { signOutAction, updateProfileAction } from "@/app/actions";
 import { formatRating } from "@/lib/format";
 import { getCurrentUserProfile } from "@/lib/data";
 
-export default async function ProfilePage() {
+type PageProps = {
+  searchParams: Promise<{ chyba?: string; zprava?: string }>;
+};
+
+export default async function ProfilePage({ searchParams }: PageProps) {
   const { user, profile } = await getCurrentUserProfile();
+  const { chyba, zprava } = await searchParams;
 
   if (!user) {
     redirect("/prihlaseni?next=/profil");
@@ -25,6 +31,9 @@ export default async function ProfilePage() {
       <div className="mt-5">
         <ConfigNotice />
       </div>
+
+      {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
+      {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
 
       <section className="mt-5 rounded-lg border border-line bg-white p-5 shadow-soft">
         <div className="flex items-center gap-4">
@@ -46,7 +55,7 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <form action="#" className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
+      <form action={updateProfileAction} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
         <div>
           <label className="text-sm font-semibold text-ink" htmlFor="display_name">
             Zobrazované jméno
@@ -92,7 +101,7 @@ export default async function ProfilePage() {
         </Link>
       </div>
 
-      <form action="#" className="mt-4">
+      <form action={signOutAction} className="mt-4">
         <button
           type="submit"
           className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-semibold text-ink hover:bg-fog"

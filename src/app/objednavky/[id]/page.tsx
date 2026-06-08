@@ -5,22 +5,19 @@ import { CheckCircle, MessageCircle, Star, XCircle } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { OrderStatusBadge } from "@/components/StatusBadge";
 import { SubmitButton } from "@/components/SubmitButton";
+import { createReviewAction, updateOrderStatusAction } from "@/app/actions";
 import { formatPrice, formatShortDate } from "@/lib/format";
 import { getCurrentUserProfile, getOrderById } from "@/lib/data";
 import type { OrderStatus } from "@/lib/types";
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ chyba?: string; zprava?: string }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return [{ id: "demo" }];
-}
-
-export default async function OrderDetailPage({ params }: PageProps) {
+export default async function OrderDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const { chyba, zprava } = await searchParams;
   const { user } = await getCurrentUserProfile();
 
   if (!user) {
@@ -46,6 +43,9 @@ export default async function OrderDetailPage({ params }: PageProps) {
         <h1 className="text-3xl font-black text-ink">{order.listing.title}</h1>
         <OrderStatusBadge status={order.status} />
       </div>
+
+      {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
+      {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_320px]">
         <section className="space-y-5">
@@ -76,7 +76,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
               {hasReviewed ? (
                 <p className="mt-3 rounded-lg bg-fog p-4 text-sm text-zinc-700">Hodnocení už je uložené.</p>
               ) : (
-                <form action="#" className="mt-4 space-y-4">
+                <form action={createReviewAction} className="mt-4 space-y-4">
                   <input type="hidden" name="order_id" value={order.id} />
                   <input type="hidden" name="reviewed_user_id" value={reviewedUserId} />
                   <div>
@@ -117,7 +117,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
               {isSeller && order.status === "created" ? (
                 <OrderAction orderId={order.id} status="accepted" label="Přijmout" icon={<CheckCircle className="h-4 w-4" />} primary />
               ) : null}
-              {isSeller && ["created", "accepted"].includes(order.status) ? (
+              {["created", "accepted"].includes(order.status) ? (
                 <OrderAction orderId={order.id} status="completed" label="Dokončit" icon={<CheckCircle className="h-4 w-4" />} primary />
               ) : null}
               {["created", "accepted"].includes(order.status) ? (
@@ -175,7 +175,7 @@ function OrderAction({
   primary?: boolean;
 }) {
   return (
-    <form action="#">
+    <form action={updateOrderStatusAction}>
       <input type="hidden" name="order_id" value={orderId} />
       <input type="hidden" name="status" value={status} />
       <button

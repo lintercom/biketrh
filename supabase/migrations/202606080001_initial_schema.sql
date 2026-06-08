@@ -266,7 +266,7 @@ begin
       raise exception 'Objednávku nelze zrušit.';
     end if;
   elsif p_status = 'completed' then
-    if current_user_id <> order_row.seller_id or order_row.status not in ('created', 'accepted') then
+    if order_row.status not in ('created', 'accepted') then
       raise exception 'Objednávku nelze dokončit.';
     end if;
   else

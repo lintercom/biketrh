@@ -2,22 +2,18 @@ import { notFound, redirect } from "next/navigation";
 import { Send } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { SubmitButton } from "@/components/SubmitButton";
+import { sendMessageAction } from "@/app/actions";
 import { formatShortDate } from "@/lib/format";
 import { getConversation, getCurrentUserProfile } from "@/lib/data";
-import { demoListings } from "@/lib/mock-data";
 
 type PageProps = {
   params: Promise<{ listingId: string }>;
+  searchParams: Promise<{ chyba?: string }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return demoListings.map((listing) => ({ listingId: listing.id }));
-}
-
-export default async function MessagesPage({ params }: PageProps) {
+export default async function MessagesPage({ params, searchParams }: PageProps) {
   const { listingId } = await params;
+  const { chyba } = await searchParams;
   const { user } = await getCurrentUserProfile();
 
   if (!user) {
@@ -43,6 +39,8 @@ export default async function MessagesPage({ params }: PageProps) {
           </div>
         </div>
       </header>
+
+      {chyba ? <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
 
       <section className="mt-4 flex-1 space-y-3 rounded-lg border border-line bg-white p-4 shadow-soft">
         {conversation.messages.length > 0 ? (
@@ -73,7 +71,7 @@ export default async function MessagesPage({ params }: PageProps) {
       </section>
 
       {conversation.receiver ? (
-        <form action="#" className="mt-4 rounded-lg border border-line bg-white p-3 shadow-soft">
+        <form action={sendMessageAction} className="mt-4 rounded-lg border border-line bg-white p-3 shadow-soft">
           <input type="hidden" name="listing_id" value={conversation.listing.id} />
           <input type="hidden" name="receiver_id" value={conversation.receiver.id} />
           <label className="sr-only" htmlFor="text">

@@ -4,22 +4,18 @@ import { ArrowLeft, MapPin, MessageCircle, ShieldCheck, Star } from "lucide-reac
 import { Avatar } from "@/components/Avatar";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ListingStatusBadge } from "@/components/StatusBadge";
+import { startOrderAction } from "@/app/actions";
 import { conditionLabels, formatDate, formatPrice, formatRating } from "@/lib/format";
 import { getCurrentUserProfile, getListingById } from "@/lib/data";
-import { demoListings } from "@/lib/mock-data";
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ chyba?: string }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return demoListings.map((listing) => ({ id: listing.id }));
-}
-
-export default async function ListingDetailPage({ params }: PageProps) {
+export default async function ListingDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const { chyba } = await searchParams;
   const listing = await getListingById(id);
   const { user } = await getCurrentUserProfile();
 
@@ -37,6 +33,10 @@ export default async function ListingDetailPage({ params }: PageProps) {
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Zpět na inzeráty
       </Link>
+
+      {chyba ? (
+        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div>
+      ) : null}
 
       <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,0.8fr)]">
         <section className="space-y-3">
@@ -130,7 +130,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
             ) : isOwner ? (
               <p className="rounded-lg bg-fog p-4 text-sm text-zinc-700">Toto je váš inzerát.</p>
             ) : canOrder ? (
-              <form action="#" className="space-y-3">
+              <form action={startOrderAction} className="space-y-3">
                 <input type="hidden" name="listing_id" value={listing.id} />
                 <label className="block text-sm font-semibold text-ink" htmlFor="message">
                   Zpráva pro prodejce

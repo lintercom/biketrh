@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { CheckCircle, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { CheckCircle, Eye, EyeOff, Pencil, RotateCcw } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { ListingCard } from "@/components/ListingCard";
+import { updateListingStatusAction } from "@/app/actions";
 import { getCurrentUserProfile, getUserListings } from "@/lib/data";
 import type { ListingStatus } from "@/lib/types";
 
-export default async function MyListingsPage() {
+type PageProps = {
+  searchParams: Promise<{ chyba?: string; zprava?: string }>;
+};
+
+export default async function MyListingsPage({ searchParams }: PageProps) {
   const { user } = await getCurrentUserProfile();
+  const { chyba, zprava } = await searchParams;
 
   if (!user) {
     redirect("/prihlaseni?next=/moje-inzeraty");
@@ -24,6 +30,9 @@ export default async function MyListingsPage() {
         Spravujte aktivní nabídky, skryté inzeráty i komponenty, které už jsou prodané.
       </p>
 
+      {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
+      {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
+
       {listings.length > 0 ? (
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {listings.map((listing) => (
@@ -32,7 +41,14 @@ export default async function MyListingsPage() {
               listing={listing}
               showStatus
               actions={
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href={`/moje-inzeraty/${listing.id}/upravit`}
+                    className="inline-flex min-h-10 items-center justify-center gap-1 rounded-lg border border-line bg-white px-2 text-xs font-semibold text-ink hover:bg-fog"
+                  >
+                    <Pencil className="h-4 w-4" aria-hidden="true" />
+                    Upravit
+                  </Link>
                   {listing.status === "hidden" ? (
                     <ListingAction listingId={listing.id} status="active" label="Obnovit" icon={<RotateCcw className="h-4 w-4" />} />
                   ) : (
@@ -43,12 +59,6 @@ export default async function MyListingsPage() {
                   ) : (
                     <ListingAction listingId={listing.id} status="active" label="Aktivní" icon={<Eye className="h-4 w-4" />} />
                   )}
-                  <Link
-                    href={`/inzeraty/${listing.id}`}
-                    className="inline-flex min-h-10 items-center justify-center rounded-lg border border-line bg-white px-2 text-xs font-semibold text-ink hover:bg-fog"
-                  >
-                    Detail
-                  </Link>
                 </div>
               }
             />
@@ -80,7 +90,7 @@ function ListingAction({
   icon: ReactNode;
 }) {
   return (
-    <form action="#">
+    <form action={updateListingStatusAction}>
       <input type="hidden" name="listing_id" value={listingId} />
       <input type="hidden" name="status" value={status} />
       <button

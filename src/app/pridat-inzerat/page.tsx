@@ -2,11 +2,17 @@ import { redirect } from "next/navigation";
 import { Camera, CirclePlus } from "lucide-react";
 import { ConfigNotice } from "@/components/ConfigNotice";
 import { SubmitButton } from "@/components/SubmitButton";
+import { createListingAction } from "@/app/actions";
 import { conditionLabels } from "@/lib/format";
 import { getCurrentUserProfile } from "@/lib/data";
 
-export default async function AddListingPage() {
+type PageProps = {
+  searchParams: Promise<{ chyba?: string }>;
+};
+
+export default async function AddListingPage({ searchParams }: PageProps) {
   const { user } = await getCurrentUserProfile();
+  const { chyba } = await searchParams;
 
   if (!user) {
     redirect("/prihlaseni?next=/pridat-inzerat");
@@ -24,8 +30,12 @@ export default async function AddListingPage() {
         <ConfigNotice />
       </div>
 
+      {chyba ? (
+        <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div>
+      ) : null}
+
       <form
-        action="#"
+        action={createListingAction}
         encType="multipart/form-data"
         className="mt-5 space-y-5 rounded-lg border border-line bg-white p-5 shadow-soft"
       >

@@ -6,12 +6,21 @@ import { Bike, CirclePlus, Home, List, ShoppingBag, User } from "lucide-react";
 import { clsx } from "clsx";
 import type { Profile } from "@/lib/types";
 
-const items = [
+const signedInItems = [
   { href: "/", label: "Domů", icon: Home },
   { href: "/inzeraty", label: "Inzeráty", icon: List },
   { href: "/pridat-inzerat", label: "Přidat", icon: CirclePlus },
+  { href: "/moje-inzeraty", label: "Moje inzeráty", icon: List },
   { href: "/moje-objednavky", label: "Objednávky", icon: ShoppingBag },
   { href: "/profil", label: "Profil", icon: User }
+];
+
+const signedOutItems = [
+  { href: "/", label: "Domů", icon: Home },
+  { href: "/inzeraty", label: "Inzeráty", icon: List },
+  { href: "/pridat-inzerat", label: "Přidat", icon: CirclePlus },
+  { href: "/prihlaseni", label: "Přihlášení", icon: User },
+  { href: "/registrace", label: "Registrace", icon: User }
 ];
 
 function isActive(pathname: string, href: string) {
@@ -24,6 +33,7 @@ function isActive(pathname: string, href: string) {
 
 export function Navigation({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
+  const items = profile ? signedInItems : signedOutItems;
 
   return (
     <>
@@ -36,7 +46,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
             BikeTrh
           </Link>
           <nav className="flex items-center gap-1">
-            {items.slice(1, 4).map((item) => {
+            {items.slice(1, profile ? 5 : 3).map((item) => {
               const Icon = item.icon;
               return (
                 <Link
@@ -60,11 +70,19 @@ export function Navigation({ profile }: { profile: Profile | null }) {
             <User className="h-4 w-4" aria-hidden="true" />
             {profile ? profile.display_name : "Přihlásit"}
           </Link>
+          {!profile ? (
+            <Link
+              href="/registrace"
+              className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-4 py-2 text-sm font-semibold text-ink hover:bg-fog"
+            >
+              Registrovat
+            </Link>
+          ) : null}
         </div>
       </header>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_28px_rgba(23,32,27,0.08)] backdrop-blur md:hidden">
-        <div className="grid h-16 grid-cols-5">
+        <div className={profile ? "grid h-16 grid-cols-6" : "grid h-16 grid-cols-5"}>
           {items.map((item) => {
             const Icon = item.icon;
             const active = isActive(pathname, item.href);

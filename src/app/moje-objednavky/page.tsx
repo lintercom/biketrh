@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { OrderStatusBadge } from "@/components/StatusBadge";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, formatShortDate } from "@/lib/format";
 import { getCurrentUserProfile, getOrdersForUser } from "@/lib/data";
 import type { OrderWithDetails } from "@/lib/types";
 
@@ -24,20 +24,30 @@ export default async function MyOrdersPage() {
       <h1 className="mt-1 text-3xl font-black text-ink">Moje objednávky</h1>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <OrderSection title="Nakupuji" orders={buying} empty="Zatím nemáte žádné nákupy." />
-        <OrderSection title="Prodávám" orders={selling} empty="Zatím nemáte žádné objednávky od kupujících." />
+        <OrderSection title="Nakupuji" orders={buying} currentUserId={user.id} empty="Zatím nemáte žádné nákupy." />
+        <OrderSection title="Prodávám" orders={selling} currentUserId={user.id} empty="Zatím nemáte žádné objednávky od kupujících." />
       </div>
     </div>
   );
 }
 
-function OrderSection({ title, orders, empty }: { title: string; orders: OrderWithDetails[]; empty: string }) {
+function OrderSection({
+  title,
+  orders,
+  currentUserId,
+  empty
+}: {
+  title: string;
+  orders: OrderWithDetails[];
+  currentUserId: string;
+  empty: string;
+}) {
   return (
     <section>
       <h2 className="text-xl font-bold text-ink">{title}</h2>
       <div className="mt-3 space-y-3">
         {orders.length > 0 ? (
-          orders.map((order) => <OrderRow key={order.id} order={order} />)
+          orders.map((order) => <OrderRow key={order.id} order={order} currentUserId={currentUserId} />)
         ) : (
           <EmptyState title={empty} text="Jakmile vznikne rezervace u inzerátu, najdete ji tady." />
         )}
@@ -46,8 +56,9 @@ function OrderSection({ title, orders, empty }: { title: string; orders: OrderWi
   );
 }
 
-function OrderRow({ order }: { order: OrderWithDetails }) {
+function OrderRow({ order, currentUserId }: { order: OrderWithDetails; currentUserId: string }) {
   const image = order.listing.images[0]?.image_url;
+  const otherProfile = order.buyer_id === currentUserId ? order.seller : order.buyer;
 
   return (
     <Link
@@ -62,6 +73,8 @@ function OrderRow({ order }: { order: OrderWithDetails }) {
           <div className="min-w-0">
             <h3 className="truncate font-semibold text-ink">{order.listing.title}</h3>
             <p className="mt-1 text-sm font-bold text-ink">{formatPrice(order.listing.price)}</p>
+            <p className="mt-1 truncate text-xs text-zinc-600">S {otherProfile.display_name}</p>
+            <p className="mt-1 text-xs text-zinc-500">Vytvořeno {formatShortDate(order.created_at)}</p>
           </div>
           <ArrowRight className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden="true" />
         </div>

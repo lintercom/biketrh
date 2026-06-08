@@ -3,11 +3,16 @@ import { redirect } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { ConfigNotice } from "@/components/ConfigNotice";
 import { SubmitButton } from "@/components/SubmitButton";
+import { signInAction } from "@/app/actions";
 import { getCurrentUserProfile } from "@/lib/data";
 
-export default async function SignInPage() {
+type PageProps = {
+  searchParams: Promise<{ chyba?: string; zprava?: string; next?: string }>;
+};
+
+export default async function SignInPage({ searchParams }: PageProps) {
   const { user } = await getCurrentUserProfile();
-  const next = "/profil";
+  const { chyba, zprava, next = "/profil" } = await searchParams;
 
   if (user) {
     redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/profil");
@@ -23,7 +28,10 @@ export default async function SignInPage() {
         <ConfigNotice />
       </div>
 
-      <form action="#" className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
+      {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
+      {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
+
+      <form action={signInAction} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
         <input type="hidden" name="next" value={next} />
         <div>
           <label className="text-sm font-semibold text-ink" htmlFor="email">

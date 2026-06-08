@@ -5,17 +5,10 @@ import { EmptyState } from "@/components/EmptyState";
 import { ListingCard } from "@/components/ListingCard";
 import { formatRating } from "@/lib/format";
 import { getPublicProfile } from "@/lib/data";
-import { demoProfiles } from "@/lib/mock-data";
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return demoProfiles.map((profile) => ({ id: profile.id }));
-}
 
 export default async function PublicProfilePage({ params }: PageProps) {
   const { id } = await params;
