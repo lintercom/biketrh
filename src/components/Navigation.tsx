@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Camera,
   ChevronDown,
   CirclePlus,
   Grid2X2,
   HelpCircle,
+  Home,
   List,
   LogOut,
   Menu,
@@ -20,8 +21,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { signOutAction } from "@/app/actions";
-import { catalogSections, categoryHref, defaultCatalogCategory, defaultCatalogSection } from "@/lib/catalog";
-import type { CatalogCategory, CatalogSection } from "@/lib/catalog";
+import { catalogCategories, categoryHref } from "@/lib/catalog";
 import type { Profile } from "@/lib/types";
 
 const mobileMenuItems = [
@@ -32,25 +32,16 @@ const mobileMenuItems = [
   { href: "/profil", label: "Profil", icon: User },
   { href: "/prihlaseni", label: "Přihlášení", icon: User },
   { href: "/registrace", label: "Registrace", icon: User },
-  { href: categoryHref("komponenty"), label: "Komponenty", icon: Grid2X2 }
+  { href: categoryHref("Komponenty"), label: "Komponenty", icon: Grid2X2 }
 ];
 
 const bottomNavItems = [
-  { href: "/", label: "Domů", icon: HomeIcon, match: ["/"] },
+  { href: "/", label: "Domů", icon: Home, match: ["/"] },
   { href: "/inzeraty", label: "Procházet", icon: Search, match: ["/inzeraty", "/uzivatel", "/uzivatele"] },
   { href: "/pridat-inzerat", label: "Prodávat", icon: CirclePlus, match: ["/pridat-inzerat"] },
   { href: "/moje-objednavky", label: "Zprávy", icon: MessageCircle, match: ["/moje-objednavky", "/objednavky", "/zpravy"] },
   { href: "/profil", label: "Profil", icon: User, match: ["/profil", "/prihlaseni", "/registrace"] }
 ];
-
-function HomeIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
-      <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    </svg>
-  );
-}
 
 function isActive(pathname: string, href: string) {
   if (href === "/") {
@@ -70,100 +61,6 @@ function isBottomActive(pathname: string, matches: string[]) {
   });
 }
 
-function CatalogMenu({
-  section,
-  category,
-  onCategoryChange
-}: {
-  section: CatalogSection;
-  category: CatalogCategory;
-  onCategoryChange: (category: CatalogCategory) => void;
-}) {
-  const Icon = category.icon;
-  const leftCategories = section.categories.length > 0 ? section.categories : [defaultCatalogCategory];
-  const midpoint = Math.ceil(category.subcategories.length / 2);
-  const subcategoryColumns = [category.subcategories.slice(0, midpoint), category.subcategories.slice(midpoint)].filter(
-    (items) => items.length > 0
-  );
-
-  return (
-    <div className="absolute left-8 right-8 top-full z-50 overflow-hidden rounded-lg border border-line bg-white shadow-[0_18px_50px_rgba(23,32,27,0.18)]">
-      <div className="grid min-h-[420px] grid-cols-[280px_1fr_1fr] xl:grid-cols-[320px_1fr_1fr_380px]">
-        <div className="border-r border-line py-5">
-          <Link
-            href={categoryHref()}
-            className="flex min-h-14 items-center gap-4 px-6 text-base font-medium text-ink hover:bg-[#fff7df] xl:px-8 xl:text-lg"
-          >
-            <Grid2X2 className="h-6 w-6" aria-hidden="true" />
-            Zobrazit vše
-          </Link>
-
-          {leftCategories.map((item) => {
-            const ItemIcon = item.icon;
-            const selected = item.slug === category.slug;
-
-            return (
-              <Link
-                key={item.slug}
-                href={categoryHref(item.slug)}
-                onMouseEnter={() => onCategoryChange(item)}
-                className={clsx(
-                  "flex min-h-14 items-center gap-4 px-6 text-base font-semibold text-ink hover:bg-[#fff7df] xl:px-8 xl:text-lg",
-                  selected && "bg-[#fff7df]"
-                )}
-              >
-                <ItemIcon className={clsx("h-6 w-6", selected ? "text-moss" : "text-ink")} aria-hidden="true" />
-                <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                <ChevronDown className="-rotate-90 h-5 w-5 text-zinc-500" aria-hidden="true" />
-              </Link>
-            );
-          })}
-        </div>
-
-        {subcategoryColumns.map((items, columnIndex) => (
-          <div key={columnIndex} className="border-r border-line px-7 py-10 xl:px-10 xl:py-12">
-            <div className="grid gap-6">
-              {items.map((subcategory) => (
-                <Link
-                  key={subcategory.slug}
-                  href={categoryHref(subcategory.slug)}
-                  className="group flex items-start gap-5 text-ink"
-                >
-                  <Icon className="mt-0.5 h-6 w-6 shrink-0 text-ink group-hover:text-moss" aria-hidden="true" />
-                  <div>
-                    <p className="text-base font-semibold group-hover:text-moss xl:text-lg">{subcategory.label}</p>
-                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-zinc-500">{subcategory.description}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        {subcategoryColumns.length === 1 ? <div className="border-r border-line" /> : null}
-
-        <div className="hidden p-7 xl:block xl:p-9">
-          <div className="flex h-full flex-col justify-between rounded-lg bg-[#fff7df] p-8">
-            <div>
-              <div className="mb-6 inline-flex h-28 w-28 items-center justify-center rounded-lg bg-white/70 text-moss">
-                <Icon className="h-20 w-20" aria-hidden="true" />
-              </div>
-              <h3 className="text-2xl font-black text-ink">{category.label}</h3>
-              <p className="mt-4 max-w-xs text-lg leading-8 text-ink">{category.description}</p>
-            </div>
-            <Link
-              href={categoryHref(category.slug)}
-              className="mt-8 inline-flex w-fit min-h-12 items-center justify-center rounded-lg border border-moss bg-white px-5 py-3 text-base font-semibold text-moss hover:bg-moss hover:text-white"
-            >
-              Zobrazit všechny
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className={clsx("shrink-0 font-black italic leading-none text-black", compact ? "text-[30px]" : "text-[42px]")}>
@@ -175,23 +72,9 @@ function Logo({ compact = false }: { compact?: boolean }) {
 export function Navigation({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
   const [searchTarget, setSearchTarget] = useState<"listings" | "users">("listings");
-  const [openSectionSlug, setOpenSectionSlug] = useState<string | null>(null);
-  const [activeCategorySlug, setActiveCategorySlug] = useState(defaultCatalogCategory.slug);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchAction = searchTarget === "users" ? "/uzivatele" : "/inzeraty";
   const searchPlaceholder = searchTarget === "users" ? "Hledat uživatele" : "Hledat komponenty";
-
-  const activeSection = useMemo(
-    () => catalogSections.find((section) => section.slug === openSectionSlug) ?? defaultCatalogSection,
-    [openSectionSlug]
-  );
-  const activeCategory =
-    activeSection.categories.find((category) => category.slug === activeCategorySlug) ?? activeSection.categories[0] ?? defaultCatalogCategory;
-
-  function openSection(section: CatalogSection) {
-    setOpenSectionSlug(section.slug);
-    setActiveCategorySlug(section.categories[0]?.slug ?? defaultCatalogCategory.slug);
-  }
 
   return (
     <>
@@ -277,37 +160,23 @@ export function Navigation({ profile }: { profile: Profile | null }) {
           </div>
         </div>
 
-        <div className="relative border-t border-line" onMouseLeave={() => setOpenSectionSlug(null)}>
+        <div className="border-t border-line">
           <div className="mx-auto flex h-16 max-w-[1800px] items-center gap-10 overflow-hidden px-8">
-            {catalogSections.map((section) => {
-              const isOpen = section.slug === openSectionSlug;
+            {catalogCategories.map((category) => {
+              const Icon = category.icon;
 
               return (
                 <Link
-                  key={section.slug}
-                  href={categoryHref(section.slug)}
-                  onMouseEnter={() => openSection(section)}
-                  onFocus={() => openSection(section)}
-                  className={clsx(
-                    "relative inline-flex h-16 shrink-0 items-center gap-2 text-lg font-semibold text-ink hover:text-moss",
-                    isOpen && "text-moss"
-                  )}
+                  key={category.label}
+                  href={categoryHref(category.label)}
+                  className="relative inline-flex h-16 shrink-0 items-center gap-2 text-lg font-semibold text-ink hover:text-moss"
                 >
-                  {section.label}
-                  {section.categories.length > 0 ? <ChevronDown className="h-4 w-4" aria-hidden="true" /> : null}
-                  {isOpen ? <span className="absolute inset-x-0 bottom-0 h-0.5 bg-moss" /> : null}
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                  {category.label}
                 </Link>
               );
             })}
           </div>
-
-          {openSectionSlug ? (
-            <CatalogMenu
-              section={activeSection}
-              category={activeCategory}
-              onCategoryChange={(category) => setActiveCategorySlug(category.slug)}
-            />
-          ) : null}
         </div>
       </header>
 

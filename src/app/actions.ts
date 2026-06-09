@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { isValidListingCategory } from "@/lib/catalog";
 import type { ListingCondition, ListingStatus, OrderStatus } from "@/lib/types";
 
 const listingConditions: ListingCondition[] = ["new", "like_new", "good", "used", "for_parts"];
@@ -161,9 +162,15 @@ export async function createListingAction(formData: FormData) {
   const { supabase, user } = await requireUser("/pridat-inzerat");
   const title = textField(formData, "title");
   const description = textField(formData, "description");
+  const category = textField(formData, "category");
+  const subcategory = textField(formData, "subcategory");
   const location = textField(formData, "location");
   const condition = textField(formData, "condition") as ListingCondition;
   const price = Math.round(Number(textField(formData, "price").replace(/\s/g, "").replace(",", ".")));
+
+  if (!isValidListingCategory(category, subcategory)) {
+    withError("/pridat-inzerat", "Vyberte hlavní kategorii a odpovídající podkategorii.");
+  }
 
   if (!title || !description || !location || Number.isNaN(price) || price <= 0 || !listingConditions.includes(condition)) {
     withError("/pridat-inzerat", "Vyplňte název, popis, cenu větší než 0, stav a lokalitu.");
@@ -176,7 +183,8 @@ export async function createListingAction(formData: FormData) {
       title,
       description,
       price,
-      category: "Komponenty",
+      category,
+      subcategory,
       condition,
       location,
       status: "active"
@@ -232,11 +240,17 @@ export async function updateListingAction(formData: FormData) {
   const listingId = textField(formData, "listing_id");
   const title = textField(formData, "title");
   const description = textField(formData, "description");
+  const category = textField(formData, "category");
+  const subcategory = textField(formData, "subcategory");
   const location = textField(formData, "location");
   const condition = textField(formData, "condition") as ListingCondition;
   const status = textField(formData, "status") as ListingStatus;
   const price = Math.round(Number(textField(formData, "price").replace(/\s/g, "").replace(",", ".")));
   const path = listingId ? `/moje-inzeraty/${listingId}/upravit` : "/moje-inzeraty";
+
+  if (!isValidListingCategory(category, subcategory)) {
+    withError(path, "Vyberte hlavní kategorii a odpovídající podkategorii.");
+  }
 
   if (!listingId) {
     withError("/moje-inzeraty", "Inzerát nebyl nalezen.");
@@ -261,6 +275,8 @@ export async function updateListingAction(formData: FormData) {
       title,
       description,
       price,
+      category,
+      subcategory,
       condition,
       location,
       status

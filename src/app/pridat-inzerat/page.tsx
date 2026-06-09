@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { Camera, CirclePlus } from "lucide-react";
+import { CategoryFields } from "@/components/CategoryFields";
 import { ConfigNotice } from "@/components/ConfigNotice";
 import { SubmitButton } from "@/components/SubmitButton";
 import { createListingAction } from "@/app/actions";
@@ -22,9 +23,7 @@ export default async function AddListingPage({ searchParams }: PageProps) {
     <div className="mx-auto max-w-2xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Nový inzerát</p>
       <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Přidat komponent</h1>
-      <p className="mt-2 text-sm leading-6 text-zinc-600">
-        Kategorie je pro MVP nastavená automaticky na Komponenty.
-      </p>
+      <p className="mt-2 text-sm leading-6 text-zinc-600">Vyberte hlavní kategorii a odpovídající podkategorii.</p>
 
       <div className="mt-5">
         <ConfigNotice />
@@ -50,6 +49,8 @@ export default async function AddListingPage({ searchParams }: PageProps) {
           </label>
           <textarea id="description" name="description" required minLength={10} rows={6} className="mt-2 px-3 py-3" />
         </div>
+
+        <CategoryFields />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

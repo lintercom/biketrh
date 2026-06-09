@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
+import { CategoryFields } from "@/components/CategoryFields";
 import { SubmitButton } from "@/components/SubmitButton";
 import { updateListingAction } from "@/app/actions";
 import { conditionLabels } from "@/lib/format";
@@ -70,6 +71,8 @@ export default async function EditListingPage({ params, searchParams }: PageProp
             className="mt-2 px-3 py-3"
           />
         </div>
+
+        <CategoryFields defaultCategory={listing.category} defaultSubcategory={listing.subcategory} />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

@@ -18,6 +18,7 @@ create table if not exists public.listings (
   description text not null check (char_length(description) between 10 and 3000),
   price integer not null check (price >= 0),
   category text not null default 'Komponenty',
+  subcategory text not null default 'Ostatní',
   condition text not null check (condition in ('new', 'like_new', 'good', 'used', 'for_parts')),
   location text not null check (char_length(location) between 2 and 120),
   status text not null default 'active' check (status in ('active', 'reserved', 'sold', 'hidden')),
@@ -74,6 +75,7 @@ create table if not exists public.reviews (
 
 create index if not exists listings_seller_idx on public.listings (seller_id);
 create index if not exists listings_status_created_idx on public.listings (status, created_at desc);
+create index if not exists listings_status_category_subcategory_idx on public.listings (status, category, subcategory, created_at desc);
 create index if not exists listing_images_listing_idx on public.listing_images (listing_id, sort_order);
 create index if not exists orders_buyer_idx on public.orders (buyer_id, updated_at desc);
 create index if not exists orders_seller_idx on public.orders (seller_id, updated_at desc);
@@ -328,7 +330,11 @@ using (
 drop policy if exists "Users create own listings" on public.listings;
 create policy "Users create own listings"
 on public.listings for insert
-with check (seller_id = auth.uid() and category = 'Komponenty');
+with check (
+  seller_id = auth.uid()
+  and category in ('Komponenty', 'Kola', 'Elektrokola')
+  and char_length(subcategory) between 2 and 80
+);
 
 drop policy if exists "Users update own listings" on public.listings;
 create policy "Users update own listings"

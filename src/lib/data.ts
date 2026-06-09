@@ -19,6 +19,7 @@ const listingSelect = `
   description,
   price,
   category,
+  subcategory,
   condition,
   location,
   status,
@@ -58,6 +59,7 @@ const orderSelect = `
     description,
     price,
     category,
+    subcategory,
     condition,
     location,
     status,
@@ -127,14 +129,14 @@ function normalizeSearchTerm(query?: string) {
   return value.replace(/[%_,]/g, " ").replace(/\s+/g, " ").slice(0, 80);
 }
 
-function normalizeCategoryTerm(category?: string) {
-  const value = category?.trim() ?? "";
+function normalizeFilterTerm(value?: string) {
+  const trimmed = value?.trim() ?? "";
 
-  if (!value) {
+  if (!trimmed) {
     return "";
   }
 
-  return value.replace(/[%_,]/g, " ").replace(/\s+/g, " ").slice(0, 80);
+  return (findCatalogLabel(trimmed) ?? trimmed).replace(/[%_,]/g, " ").replace(/\s+/g, " ").slice(0, 80);
 }
 
 function single<T>(value: T | T[] | null | undefined): T | null {
@@ -145,20 +147,22 @@ function single<T>(value: T | T[] | null | undefined): T | null {
   return value ?? null;
 }
 
-function filterDemoListings(search: string, categoryLabel: string) {
+function filterDemoListings(search: string, categoryFilter: string, subcategoryFilter: string) {
   const lowerSearch = search.toLowerCase();
-  const lowerCategory = categoryLabel.toLowerCase();
+  const lowerCategory = categoryFilter.toLowerCase();
+  const lowerSubcategory = subcategoryFilter.toLowerCase();
 
   return demoListings.filter((listing) => {
     const matchesSearch =
       !lowerSearch ||
-      [listing.title, listing.description, listing.location, listing.category, conditionLabelsFallback(listing.condition)]
+      [listing.title, listing.description, listing.location, listing.category, listing.subcategory, conditionLabelsFallback(listing.condition)]
         .join(" ")
         .toLowerCase()
         .includes(lowerSearch);
-    const matchesCategory = !lowerCategory || listing.category.toLowerCase().includes(lowerCategory);
+    const matchesCategory = !lowerCategory || listing.category.toLowerCase() === lowerCategory;
+    const matchesSubcategory = !lowerSubcategory || listing.subcategory.toLowerCase() === lowerSubcategory;
 
-    return matchesSearch && matchesCategory;
+    return matchesSearch && matchesCategory && matchesSubcategory;
   });
 }
 
@@ -173,6 +177,7 @@ function normalizeListing(raw: RawListing): ListingWithDetails {
     description: String(raw.description),
     price: Number(raw.price),
     category: String(raw.category),
+    subcategory: String(raw.subcategory ?? "Ostatní"),
     condition: raw.condition as ListingWithDetails["condition"],
     location: String(raw.location),
     status: raw.status as ListingWithDetails["status"],
@@ -254,14 +259,14 @@ export async function getCurrentUserProfile() {
   return { user, profile: (createdProfile as Profile | null) ?? null };
 }
 
-export async function getListings(query?: string, category?: string): Promise<ListingWithDetails[]> {
+export async function getListings(query?: string, category?: string, subcategory?: string): Promise<ListingWithDetails[]> {
   const search = normalizeSearchTerm(query);
-  const categorySlug = normalizeCategoryTerm(category);
-  const categoryLabel = categorySlug ? findCatalogLabel(categorySlug) ?? categorySlug : "";
+  const categoryFilter = normalizeFilterTerm(category);
+  const subcategoryFilter = normalizeFilterTerm(subcategory);
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
-    return filterDemoListings(search, categoryLabel);
+    return filterDemoListings(search, categoryFilter, subcategoryFilter);
   }
 
   let request = supabase
@@ -270,19 +275,23 @@ export async function getListings(query?: string, category?: string): Promise<Li
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
-  if (categoryLabel) {
-    request = request.ilike("category", `%${categoryLabel}%`);
+  if (categoryFilter) {
+    request = request.eq("category", categoryFilter);
+  }
+
+  if (subcategoryFilter) {
+    request = request.eq("subcategory", subcategoryFilter);
   }
 
   if (search) {
     const pattern = `%${search}%`;
     request = request.or(
-      `title.ilike.${pattern},description.ilike.${pattern},location.ilike.${pattern},category.ilike.${pattern},condition.ilike.${pattern}`
+      `title.ilike.${pattern},description.ilike.${pattern},location.ilike.${pattern},category.ilike.${pattern},subcategory.ilike.${pattern},condition.ilike.${pattern}`
     );
   }
 
   const { data, error } = await request;
-  const matchingDemoListings = filterDemoListings(search, categoryLabel);
+  const matchingDemoListings = filterDemoListings(search, categoryFilter, subcategoryFilter);
 
   if (error || !data) {
     return matchingDemoListings;

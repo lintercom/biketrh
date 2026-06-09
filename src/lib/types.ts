@@ -28,6 +28,7 @@ export type Listing = {
   description: string;
   price: number;
   category: string;
+  subcategory: string;
   condition: ListingCondition;
   location: string;
   status: ListingStatus;

@@ -63,6 +63,7 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
             <div className="mt-5 grid gap-3 text-sm min-[380px]:grid-cols-2">
               <InfoTile label="Stav" value={conditionLabels[listing.condition]} />
               <InfoTile label="Kategorie" value={listing.category} />
+              <InfoTile label="Podkategorie" value={listing.subcategory} />
               <div className="rounded-lg bg-fog p-3">
                 <p className="text-zinc-500">Lokalita</p>
                 <p className="mt-1 inline-flex min-w-0 items-center gap-1 font-semibold text-ink">
