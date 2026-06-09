@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Camera, ChevronDown, CirclePlus, HelpCircle, Home, List, Search, ShoppingBag, User } from "lucide-react";
 import { clsx } from "clsx";
 import type { Profile } from "@/lib/types";
@@ -34,6 +35,9 @@ function isActive(pathname: string, href: string) {
 export function Navigation({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
   const items = profile ? signedInItems : signedOutItems;
+  const [searchTarget, setSearchTarget] = useState<"listings" | "users">("listings");
+  const searchAction = searchTarget === "users" ? "/uzivatele" : "/inzeraty";
+  const searchPlaceholder = searchTarget === "users" ? "Hledat uživatele" : "Hledat komponenty";
 
   return (
     <>
@@ -44,26 +48,34 @@ export function Navigation({ profile }: { profile: Profile | null }) {
           </Link>
 
           <div className="flex min-w-[520px] flex-1 items-center overflow-hidden rounded-lg border border-zinc-300 bg-white shadow-[0_2px_8px_rgba(23,32,27,0.04)]">
-            <Link
-              href="/inzeraty"
-              className="inline-flex h-14 shrink-0 items-center gap-5 border-r border-zinc-300 px-7 text-lg font-semibold text-ink hover:bg-fog"
-            >
-              Komponenty
-              <ChevronDown className="h-5 w-5 text-zinc-500" aria-hidden="true" />
-            </Link>
-            <form action="/inzeraty" className="flex h-14 min-w-0 flex-1 items-center gap-4 px-6">
+            <div className="relative h-14 shrink-0 border-r border-zinc-300">
+              <label htmlFor="search-target" className="sr-only">
+                Co hledat
+              </label>
+              <select
+                id="search-target"
+                value={searchTarget}
+                onChange={(event) => setSearchTarget(event.target.value === "users" ? "users" : "listings")}
+                className="h-14 w-56 cursor-pointer appearance-none border-0 bg-white px-7 pr-12 text-lg font-semibold text-ink shadow-none focus:border-0 focus:shadow-none"
+              >
+                <option value="listings">Inzeráty</option>
+                <option value="users">Uživatelé</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-6 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500" aria-hidden="true" />
+            </div>
+            <form action={searchAction} className="flex h-14 min-w-0 flex-1 items-center gap-4 px-6">
               <Search className="h-6 w-6 shrink-0 text-zinc-500" aria-hidden="true" />
               <label htmlFor="site-search" className="sr-only">
-                Hledat komponenty
+                {searchPlaceholder}
               </label>
               <input
                 id="site-search"
                 name="q"
                 type="search"
-                placeholder="Hledat komponenty"
+                placeholder={searchPlaceholder}
                 className="h-full min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-lg text-ink shadow-none placeholder:text-zinc-500 focus:border-0 focus:shadow-none"
               />
-              <Camera className="h-6 w-6 shrink-0 text-moss" aria-hidden="true" />
+              {searchTarget === "listings" ? <Camera className="h-6 w-6 shrink-0 text-moss" aria-hidden="true" /> : null}
             </form>
           </div>
 

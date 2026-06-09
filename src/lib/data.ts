@@ -116,6 +116,16 @@ type RawOrder = Record<string, unknown> & {
   reviews?: Review[] | null;
 };
 
+function normalizeSearchTerm(query?: string) {
+  const value = query?.trim() ?? "";
+
+  if (!value) {
+    return "";
+  }
+
+  return value.replace(/[%_,]/g, " ").replace(/\s+/g, " ").slice(0, 80);
+}
+
 function single<T>(value: T | T[] | null | undefined): T | null {
   if (Array.isArray(value)) {
     return value[0] ?? null;
@@ -216,24 +226,91 @@ export async function getCurrentUserProfile() {
   return { user, profile: (createdProfile as Profile | null) ?? null };
 }
 
-export async function getListings(): Promise<ListingWithDetails[]> {
+export async function getListings(query?: string): Promise<ListingWithDetails[]> {
+  const search = normalizeSearchTerm(query);
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
-    return demoListings;
+    if (!search) {
+      return demoListings;
+    }
+
+    const lowerSearch = search.toLowerCase();
+    return demoListings.filter((listing) =>
+      [listing.title, listing.description, listing.location, listing.category, conditionLabelsFallback(listing.condition)]
+        .join(" ")
+        .toLowerCase()
+        .includes(lowerSearch)
+    );
   }
 
-  const { data, error } = await supabase
+  let request = supabase
     .from("listings")
     .select(listingSelect)
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
+  if (search) {
+    const pattern = `%${search}%`;
+    request = request.or(
+      `title.ilike.${pattern},description.ilike.${pattern},location.ilike.${pattern},category.ilike.${pattern},condition.ilike.${pattern}`
+    );
+  }
+
+  const { data, error } = await request;
+
   if (error || !data) {
-    return demoListings;
+    return search ? [] : demoListings;
   }
 
   return data.map((item) => normalizeListing(item as RawListing));
+}
+
+function conditionLabelsFallback(condition: ListingWithDetails["condition"]) {
+  const labels: Record<ListingWithDetails["condition"], string> = {
+    new: "Nové",
+    like_new: "Jako nové",
+    good: "Dobrý",
+    used: "Použité",
+    for_parts: "Na díly"
+  };
+
+  return labels[condition];
+}
+
+export async function searchProfiles(query?: string): Promise<Profile[]> {
+  const search = normalizeSearchTerm(query);
+  const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    if (!search) {
+      return demoProfiles;
+    }
+
+    const lowerSearch = search.toLowerCase();
+    return demoProfiles.filter((profile) =>
+      [profile.display_name, profile.city].join(" ").toLowerCase().includes(lowerSearch)
+    );
+  }
+
+  let request = supabase
+    .from("profiles")
+    .select("id, display_name, city, avatar_url, rating_average, rating_count, created_at, updated_at")
+    .order("display_name", { ascending: true })
+    .limit(40);
+
+  if (search) {
+    const pattern = `%${search}%`;
+    request = request.or(`display_name.ilike.${pattern},city.ilike.${pattern}`);
+  }
+
+  const { data, error } = await request;
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data as Profile[];
 }
 
 export async function getListingById(id: string): Promise<ListingWithDetails | null> {
