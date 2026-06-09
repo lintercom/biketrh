@@ -58,7 +58,11 @@ export function RegistrationForm() {
 
     if (signUpError) {
       setPending(false);
-      setError("Registrace se nepovedla. Zkuste jiný email nebo silnější heslo.");
+      if (signUpError.status === 429) {
+        setError("Registrace je dočasně omezená. Zkuste to prosím za chvíli znovu.");
+      } else {
+        setError(signUpError.message || "Registrace se nepovedla. Zkuste jiný email nebo silnější heslo.");
+      }
       return;
     }
 

@@ -193,7 +193,27 @@ export async function getCurrentUserProfile() {
     .eq("id", user.id)
     .maybeSingle();
 
-  return { user, profile: profile as Profile | null };
+  if (profile) {
+    return { user, profile: profile as Profile };
+  }
+
+  const metadata = user.user_metadata ?? {};
+  const metadataName = typeof metadata.display_name === "string" ? metadata.display_name.trim() : "";
+  const emailName = user.email?.split("@")[0]?.trim() ?? "";
+  const displayName = metadataName.length >= 2 ? metadataName : emailName.length >= 2 ? emailName : "Nový uživatel";
+  const city = typeof metadata.city === "string" ? metadata.city.trim() : "";
+
+  const { data: createdProfile } = await supabase
+    .from("profiles")
+    .upsert({
+      id: user.id,
+      display_name: displayName,
+      city
+    })
+    .select("id, display_name, city, avatar_url, rating_average, rating_count, created_at, updated_at")
+    .maybeSingle();
+
+  return { user, profile: (createdProfile as Profile | null) ?? null };
 }
 
 export async function getListings(): Promise<ListingWithDetails[]> {
