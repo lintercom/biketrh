@@ -86,7 +86,7 @@ set display_name = excluded.display_name,
     rating_average = excluded.rating_average,
     rating_count = excluded.rating_count;
 
-insert into public.listings (id, seller_id, title, description, price, category, condition, location, status, created_at)
+insert into public.listings (id, seller_id, title, description, price, category, subcategory, condition, location, status, created_at)
 values
   (
     'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
@@ -95,6 +95,7 @@ values
     'Vzduchová vidlice po servisu, osa 15x110 Boost, zdvih 160 mm. Běžné kosmetické stopy, nohy bez škrábanců.',
     16900,
     'Komponenty',
+    'Vidlice',
     'good',
     'Liberec',
     'active',
@@ -107,6 +108,7 @@ values
     'Rozměr 230x65 mm, sundaný z endura po přechodu na pružinu. Bez vůlí, funkční lockout.',
     6400,
     'Komponenty',
+    'Tlumiče',
     'good',
     'Brno',
     'active',
@@ -119,6 +121,7 @@ values
     'Přední a zadní brzda včetně kotoučů 180/203 mm. Desky ještě přibližně 70 %, odvzdušněno před měsícem.',
     5200,
     'Komponenty',
+    'Brzdy, páky',
     'used',
     'Jablonec nad Nisou',
     'active',
@@ -131,6 +134,7 @@ values
     'Trailová kola 29", náboje 350, ráfky XM 481, ořech Shimano Micro Spline. Rovná, bez větších ran.',
     11900,
     'Komponenty',
+    'Zapletená kola',
     'like_new',
     'Brno',
     'active',
@@ -143,6 +147,7 @@ values
     'Průměr 31.6 mm, zdvih 180 mm. Chod plynulý, včetně páčky a bowdenu.',
     3900,
     'Komponenty',
+    'Sedlovky',
     'good',
     'Liberec',
     'active',

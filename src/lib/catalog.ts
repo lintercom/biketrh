@@ -1,5 +1,5 @@
-export type ListingCategoryName = "Komponenty" | "Kola" | "Elektrokola";
-export type CatalogIconName = "components" | "bikes" | "ebikes";
+export type ListingCategoryName = "Doplňky a příslušenství" | "Komponenty" | "Oblečení a obuv";
+export type CatalogIconName = "accessories" | "components" | "clothing";
 
 export type CatalogSubcategory = {
   slug: string;
@@ -15,51 +15,81 @@ export type CatalogCategory = {
 
 export const catalogCategories: CatalogCategory[] = [
   {
+    slug: "doplnky-a-prislusenstvi",
+    label: "Doplňky a příslušenství",
+    icon: "accessories",
+    subcategories: [
+      { slug: "helmy", label: "Helmy" },
+      { slug: "detske-sedacky-a-voziky", label: "Dětské sedačky a vozíky" },
+      { slug: "cyklocomputery-a-gps", label: "Cyklocomputery a GPS" },
+      { slug: "bryle", label: "Brýle" },
+      { slug: "ostatni-prislusenstvi", label: "Ostatní příslušenství" },
+      { slug: "chranice-a-pateraky", label: "Chrániče a páteřáky" },
+      { slug: "brasny-a-tasky", label: "Brašny a tašky" },
+      { slug: "nosice-a-zahradky-kol", label: "Nosiče a zahrádky kol" },
+      { slug: "cyklonaradi-a-montazni-sady", label: "Cyklonářadí a montážní sady" },
+      { slug: "nosice-na-kolo", label: "Nosiče na kolo" },
+      { slug: "pumpy", label: "Pumpy" },
+      { slug: "kosiky-a-lahve", label: "Košíky a lahve" },
+      { slug: "odrazky-a-svetla", label: "Odrazky a světla" },
+      { slug: "batohy-a-ledvinky", label: "Batohy a ledvinky" },
+      { slug: "obaly-na-kola", label: "Obaly na kola" },
+      { slug: "prislusenstvi-k-elektrokolum", label: "Příslušenství k elektrokolům" },
+      { slug: "blatniky-kryty", label: "Blatníky, kryty" },
+      { slug: "darky-pro-cyklisty", label: "Dárky pro cyklisty" },
+      { slug: "vyziva", label: "Výživa" },
+      { slug: "zamky", label: "Zámky" },
+      { slug: "polepy-a-ochranne-folie", label: "Polepy a ochranné fólie" }
+    ]
+  },
+  {
     slug: "komponenty",
     label: "Komponenty",
     icon: "components",
     subcategories: [
-      { slug: "odpruzeni", label: "Odpružení" },
-      { slug: "pohon", label: "Pohon" },
-      { slug: "brzdy", label: "Brzdy" },
-      { slug: "kola-a-plaste", label: "Kola a pláště" },
-      { slug: "kokpit", label: "Kokpit" },
-      { slug: "sedlova-cast", label: "Sedlová část" },
+      { slug: "zapletena-kola", label: "Zapletená kola" },
+      { slug: "kliky-a-prevodniky", label: "Kliky a převodníky" },
+      { slug: "sedla", label: "Sedla" },
+      { slug: "vidlice", label: "Vidlice" },
+      { slug: "plaste-duse-galusky", label: "Pláště, duše, galusky" },
+      { slug: "brzdy-paky", label: "Brzdy, páky" },
+      { slug: "rafky-vyplety", label: "Ráfky, výplety" },
+      { slug: "riditka-rohy", label: "Řídítka, rohy" },
+      { slug: "ramy", label: "Rámy" },
+      { slug: "sedlovky", label: "Sedlovky" },
+      { slug: "tlumice", label: "Tlumiče" },
+      { slug: "kazety-a-retezy", label: "Kazety a řetězy" },
+      { slug: "predstavce", label: "Představce" },
+      { slug: "sady", label: "Sady" },
+      { slug: "naboje-a-osy", label: "Náboje a osy" },
       { slug: "pedaly", label: "Pedály" },
-      { slug: "elektrokola-komponenty", label: "Elektrokola komponenty" },
-      { slug: "ostatni-komponenty", label: "Ostatní" }
+      { slug: "prehazovacky", label: "Přehazovačky" },
+      { slug: "ostatni-komponenty", label: "Ostatní komponenty" },
+      { slug: "razeni", label: "Řazení" },
+      { slug: "komponenty-na-elektrokola", label: "Komponenty na elektrokola" },
+      { slug: "merice-vykonu-wattmetry", label: "Měřiče výkonu (wattmetry)" },
+      { slug: "gripy-a-omotavky", label: "Gripy a omotávky" },
+      { slug: "stredova-slozeni", label: "Středová složení" },
+      { slug: "presmykace", label: "Přesmykače" },
+      { slug: "hlavova-slozeni", label: "Hlavová složení" },
+      { slug: "bowdeny-lanka", label: "Bowdeny, lanka" }
     ]
   },
   {
-    slug: "kola",
-    label: "Kola",
-    icon: "bikes",
+    slug: "obleceni-a-obuv",
+    label: "Oblečení a obuv",
+    icon: "clothing",
     subcategories: [
-      { slug: "mtb", label: "MTB" },
-      { slug: "enduro", label: "Enduro" },
-      { slug: "trail", label: "Trail" },
-      { slug: "xc", label: "XC" },
-      { slug: "downhill", label: "Downhill" },
-      { slug: "gravel", label: "Gravel" },
-      { slug: "silnicni", label: "Silniční" },
-      { slug: "mestska", label: "Městská" },
-      { slug: "detska", label: "Dětská" },
-      { slug: "ostatni-kola", label: "Ostatní" }
-    ]
-  },
-  {
-    slug: "elektrokola",
-    label: "Elektrokola",
-    icon: "ebikes",
-    subcategories: [
-      { slug: "mtb-e-bike", label: "MTB e-bike" },
-      { slug: "trail-e-bike", label: "Trail e-bike" },
-      { slug: "enduro-e-bike", label: "Enduro e-bike" },
-      { slug: "xc-e-bike", label: "XC e-bike" },
-      { slug: "gravel-e-bike", label: "Gravel e-bike" },
-      { slug: "mestske-e-bike", label: "Městské e-bike" },
-      { slug: "detske-e-bike", label: "Dětské e-bike" },
-      { slug: "ostatni-elektrokola", label: "Ostatní" }
+      { slug: "tretry-a-obuv", label: "Tretry a obuv" },
+      { slug: "dresy", label: "Dresy" },
+      { slug: "kalhoty-kratasy-a-sukne", label: "Kalhoty, kraťasy a sukně" },
+      { slug: "bundy", label: "Bundy" },
+      { slug: "rukavice", label: "Rukavice" },
+      { slug: "vesty", label: "Vesty" },
+      { slug: "navleky", label: "Návleky" },
+      { slug: "funkcni-pradlo", label: "Funkční prádlo" },
+      { slug: "cepice-a-celenky", label: "Čepice a čelenky" },
+      { slug: "plastenky-na-kola", label: "Pláštěnky na kola" }
     ]
   }
 ];

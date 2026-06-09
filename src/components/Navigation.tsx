@@ -4,8 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  Bike,
-  Bolt,
   Camera,
   ChevronDown,
   CirclePlus,
@@ -16,6 +14,7 @@ import {
   LogOut,
   Menu,
   MessageCircle,
+  Shirt,
   Search,
   ShoppingBag,
   User,
@@ -27,9 +26,9 @@ import { catalogCategories, categoryHref, type CatalogIconName } from "@/lib/cat
 import type { Profile } from "@/lib/types";
 
 const categoryIcons: Record<CatalogIconName, typeof Grid2X2> = {
+  accessories: ShoppingBag,
   components: Grid2X2,
-  bikes: Bike,
-  ebikes: Bolt
+  clothing: Shirt
 };
 
 const mobileMenuItems = [
@@ -40,7 +39,9 @@ const mobileMenuItems = [
   { href: "/profil", label: "Profil", icon: User },
   { href: "/prihlaseni", label: "Přihlášení", icon: User },
   { href: "/registrace", label: "Registrace", icon: User },
-  { href: categoryHref("Komponenty"), label: "Komponenty", icon: Grid2X2 }
+  { href: categoryHref("Doplňky a příslušenství"), label: "Doplňky", icon: ShoppingBag },
+  { href: categoryHref("Komponenty"), label: "Komponenty", icon: Grid2X2 },
+  { href: categoryHref("Oblečení a obuv"), label: "Oblečení a obuv", icon: Shirt }
 ];
 
 const bottomNavItems = [
@@ -82,7 +83,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
   const [searchTarget, setSearchTarget] = useState<"listings" | "users">("listings");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchAction = searchTarget === "users" ? "/uzivatele" : "/inzeraty";
-  const searchPlaceholder = searchTarget === "users" ? "Hledat uživatele" : "Hledat komponenty";
+  const searchPlaceholder = searchTarget === "users" ? "Hledat uživatele" : "Hledat vybavení";
 
   return (
     <>
@@ -238,13 +239,13 @@ export function Navigation({ profile }: { profile: Profile | null }) {
           <form action="/inzeraty" className="flex min-h-12 items-center gap-3 rounded-lg border border-zinc-300 bg-white px-3">
             <Search className="h-5 w-5 shrink-0 text-zinc-500" aria-hidden="true" />
             <label htmlFor="mobile-site-search" className="sr-only">
-              Hledat komponenty
+              Hledat vybavení
             </label>
             <input
               id="mobile-site-search"
               name="q"
               type="search"
-              placeholder="Hledat komponenty..."
+              placeholder="Hledat vybavení..."
               className="h-12 min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-base text-ink shadow-none placeholder:text-zinc-500 focus:border-0 focus:shadow-none"
             />
           </form>

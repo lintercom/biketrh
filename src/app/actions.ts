@@ -265,7 +265,7 @@ export async function updateListingAction(formData: FormData) {
     !listingConditions.includes(condition) ||
     !listingStatuses.includes(status)
   ) {
-    withError(path, "Vyplňte název, popis, cenu větší než 0, stav komponentu, lokalitu a status.");
+    withError(path, "Vyplňte název, popis, cenu větší než 0, stav položky, lokalitu a status.");
   }
 
   const { supabase, user } = await requireUser(path);
@@ -297,7 +297,7 @@ export async function updateListingAction(formData: FormData) {
 export async function startOrderAction(formData: FormData) {
   const listingId = textField(formData, "listing_id");
   const { supabase } = await requireUser(`/inzeraty/${listingId}`);
-  const message = textField(formData, "message") || "Mám zájem o tento komponent.";
+  const message = textField(formData, "message") || "Mám zájem o tento inzerát.";
 
   const { data: orderId, error } = await supabase.rpc("create_order_and_reserve", {
     p_listing_id: listingId,

@@ -93,7 +93,7 @@ export default async function EditListingPage({ params, searchParams }: PageProp
 
           <div>
             <label className="text-sm font-semibold text-ink" htmlFor="condition">
-              Stav komponentu
+              Stav položky
             </label>
             <select id="condition" name="condition" required defaultValue={listing.condition} className="mt-2 px-3 py-3">
               {Object.entries(conditionLabels).map(([value, label]) => (

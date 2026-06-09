@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "BikeTrh MVP",
-  description: "Jednoduchý marketplace pro cyklo komponenty z druhé ruky."
+  description: "Jednoduchý marketplace pro cyklo vybavení z druhé ruky."
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

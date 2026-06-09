@@ -17,8 +17,8 @@ create table if not exists public.listings (
   title text not null check (char_length(title) between 3 and 120),
   description text not null check (char_length(description) between 10 and 3000),
   price integer not null check (price >= 0),
-  category text not null default 'Komponenty',
-  subcategory text not null default 'Ostatní',
+  category text not null default 'Doplňky a příslušenství',
+  subcategory text not null default 'Ostatní příslušenství',
   condition text not null check (condition in ('new', 'like_new', 'good', 'used', 'for_parts')),
   location text not null check (char_length(location) between 2 and 120),
   status text not null default 'active' check (status in ('active', 'reserved', 'sold', 'hidden')),
@@ -332,7 +332,7 @@ create policy "Users create own listings"
 on public.listings for insert
 with check (
   seller_id = auth.uid()
-  and category in ('Komponenty', 'Kola', 'Elektrokola')
+  and category in ('Doplňky a příslušenství', 'Komponenty', 'Oblečení a obuv')
   and char_length(subcategory) between 2 and 80
 );
 

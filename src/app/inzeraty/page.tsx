@@ -43,7 +43,7 @@ export default async function ListingsPage({ searchParams }: PageProps) {
               ? "Hledáme v názvech, popisech, rozměrech, lokalitách, kategoriích a dalších údajích aktivních inzerátů."
               : activeFilterLabel
                 ? `Aktivní nabídky zařazené do kategorie ${activeFilterLabel}.`
-                : "Nejnovější nabídky kol, elektrokol a cyklo komponentů od lidí z bike komunity."}
+                : "Nejnovější nabídky cyklo vybavení od lidí z bike komunity."}
           </p>
         </div>
         <div className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-semibold text-zinc-700">

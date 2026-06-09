@@ -23,7 +23,7 @@ export default async function HomePage() {
               BikeTrh MVP
             </p>
             <h1 className="text-3xl font-black leading-tight tracking-normal sm:text-4xl md:text-6xl">
-              Jednodušší nákup a prodej cyklo komponentů z druhé ruky
+              Jednodušší nákup a prodej cyklo vybavení z druhé ruky
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/90 sm:text-lg sm:leading-8">
               Marketplace inspirovaný jednoduchostí Vinted, vytvořený pro bike komunitu.
@@ -54,7 +54,7 @@ export default async function HomePage() {
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-moss">Nejnovější nabídky</p>
-            <h2 className="mt-1 text-xl font-bold text-ink sm:text-2xl">Komponenty, které právě hledají nové kolo</h2>
+            <h2 className="mt-1 text-xl font-bold text-ink sm:text-2xl">Vybavení, které právě hledá nového majitele</h2>
           </div>
           <Link href="/inzeraty" className="hidden text-sm font-semibold text-moss hover:text-ink sm:inline-flex">
             Zobrazit vše
@@ -73,7 +73,7 @@ export default async function HomePage() {
           {[
             ["Rychlé vložení", "Název, stav, lokalita, fotky a hotovo."],
             ["Důvěra v profilu", "Hodnocení a aktivní nabídky jsou vidět bez složitého hledání."],
-            ["Obchod u inzerátu", "Objednávka i zprávy zůstávají navázané na konkrétní komponent."]
+            ["Obchod u inzerátu", "Objednávka i zprávy zůstávají navázané na konkrétní inzerát."]
           ].map(([title, text]) => (
             <div key={title} className="flex gap-3">
               <ShieldCheck className="mt-1 h-5 w-5 shrink-0 text-moss" aria-hidden="true" />

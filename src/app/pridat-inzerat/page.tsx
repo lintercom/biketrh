@@ -22,7 +22,7 @@ export default async function AddListingPage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Nový inzerát</p>
-      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Přidat komponent</h1>
+      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Přidat inzerát</h1>
       <p className="mt-2 text-sm leading-6 text-zinc-600">Vyberte hlavní kategorii a odpovídající podkategorii.</p>
 
       <div className="mt-5">
@@ -62,7 +62,7 @@ export default async function AddListingPage({ searchParams }: PageProps) {
 
           <div>
             <label className="text-sm font-semibold text-ink" htmlFor="condition">
-              Stav komponentu
+              Stav položky
             </label>
             <select id="condition" name="condition" required defaultValue="good" className="mt-2 px-3 py-3">
               {Object.entries(conditionLabels).map(([value, label]) => (

@@ -27,7 +27,7 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Prodej</p>
       <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Moje inzeráty</h1>
       <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-600">
-        Spravujte aktivní nabídky, skryté inzeráty i komponenty, které už jsou prodané.
+        Spravujte aktivní nabídky, skryté inzeráty i položky, které už jsou prodané.
       </p>
 
       {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
@@ -68,7 +68,7 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
         <div className="mt-5">
           <EmptyState
             title="Zatím nic neprodáváte"
-            text="Přidejte první komponent a nabídka se tady objeví."
+            text="Přidejte první inzerát a nabídka se tady objeví."
             href="/pridat-inzerat"
             action="Přidat inzerát"
           />

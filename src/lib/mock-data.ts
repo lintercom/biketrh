@@ -68,7 +68,7 @@ const demoListingInputs: Array<{
 }> = [
   {
     category: "Komponenty",
-    subcategory: "Odpružení",
+    subcategory: "Vidlice",
     title: "Fox 36 Performance 160 mm 29 Boost",
     description: "Vzduchová trail/enduro vidlice, osa 15x110 Boost, sloupek 185 mm, po základním servisu.",
     price: 11500,
@@ -76,7 +76,7 @@ const demoListingInputs: Array<{
   },
   {
     category: "Komponenty",
-    subcategory: "Pohon",
+    subcategory: "Přehazovačky",
     title: "Shimano XT RD-M8100 12s",
     description: "Přehazovačka pro 12rychlostní Shimano, rovné ramínko, kladky bez vůle.",
     price: 2490,
@@ -84,7 +84,7 @@ const demoListingInputs: Array<{
   },
   {
     category: "Komponenty",
-    subcategory: "Brzdy",
+    subcategory: "Brzdy, páky",
     title: "Shimano XT M8120 kompletní brzdy",
     description: "Čtyřpístkové brzdy, hadice 850/1600 mm, odvzdušněno před prodejem.",
     price: 3990,
@@ -92,98 +92,42 @@ const demoListingInputs: Array<{
   },
   {
     category: "Komponenty",
-    subcategory: "Kola a pláště",
+    subcategory: "Zapletená kola",
     title: "DT Swiss XM 1700 Spline 29 Boost",
     description: "Zapletená kola na Micro Spline, rovná, pásky pro bezduše jsou nalepené.",
     price: 9900,
     condition: "like_new"
   },
   {
-    category: "Komponenty",
-    subcategory: "Kokpit",
-    title: "Renthal Fatbar Carbon 800 mm",
-    description: "Karbonová řídítka s rise 30 mm, zkrácená na 790 mm, bez prasklin.",
+    category: "Doplňky a příslušenství",
+    subcategory: "Helmy",
+    title: "POC Kortal Race MIPS velikost M",
+    description: "Trailová helma bez pádu, čistá výstelka, součástí originální krabice.",
     price: 2490,
     condition: "good"
   },
   {
-    category: "Komponenty",
-    subcategory: "Sedlová část",
-    title: "OneUp Dropper V2 180 mm 31.6",
-    description: "Teleskopická sedlovka včetně páčky a bowdenu, plynulý chod.",
-    price: 3900,
-    condition: "good"
-  },
-  {
-    category: "Komponenty",
-    subcategory: "Pedály",
-    title: "Shimano XT PD-M8120 SPD",
-    description: "Nášlapné trailové pedály s klecí, včetně kufrů.",
-    price: 1690,
-    condition: "good"
-  },
-  {
-    category: "Komponenty",
-    subcategory: "Elektrokola komponenty",
-    title: "Bosch Kiox 300 displej",
-    description: "Displej bez škrábanců, držák a kabeláž součástí balení.",
-    price: 2490,
+    category: "Doplňky a příslušenství",
+    subcategory: "Odrazky a světla",
+    title: "Garmin Varia RTL515",
+    description: "Zadní radar se světlem, držák na sedlovku a USB kabel v balení.",
+    price: 3290,
     condition: "like_new"
   },
   {
-    category: "Kola",
-    subcategory: "MTB",
-    title: "Canyon Exceed CF 7 velikost M",
-    description: "Lehký karbonový hardtail, 1x12 Shimano, váha pod 11 kg.",
-    price: 43900,
-    condition: "like_new"
-  },
-  {
-    category: "Kola",
-    subcategory: "Enduro",
-    title: "Trek Slash 8 Gen 5 velikost L",
-    description: "Enduro kolo na 29 kolech, pružinový tlumič, nové brzdy.",
-    price: 68900,
-    condition: "used"
-  },
-  {
-    category: "Kola",
-    subcategory: "Trail",
-    title: "Specialized Stumpjumper Comp Alloy M",
-    description: "Trailové kolo 29, zdvih 140/130 mm, pravidelně servisované.",
-    price: 52900,
+    category: "Oblečení a obuv",
+    subcategory: "Tretry a obuv",
+    title: "Shimano XC7 tretry velikost 43",
+    description: "Karbonová podrážka, SPD kufry součástí, běžné známky používání.",
+    price: 2190,
     condition: "good"
   },
   {
-    category: "Kola",
-    subcategory: "Gravel",
-    title: "Cannondale Topstone Alloy 1",
-    description: "Gravel na Shimano GRX, pláště 40 mm, dobrý stav po servisu.",
-    price: 32900,
-    condition: "good"
-  },
-  {
-    category: "Elektrokola",
-    subcategory: "MTB e-bike",
-    title: "Giant Trance X E+ 2 Pro",
-    description: "Celoodpružené elektrokolo s baterií 625 Wh, diagnostika v pořádku.",
-    price: 79900,
-    condition: "good"
-  },
-  {
-    category: "Elektrokola",
-    subcategory: "Trail e-bike",
-    title: "Specialized Turbo Levo Comp",
-    description: "Trail e-bike po výměně řetězu a brzdových destiček, velikost L.",
-    price: 92900,
-    condition: "used"
-  },
-  {
-    category: "Elektrokola",
-    subcategory: "Městské e-bike",
-    title: "Cube Kathmandu Hybrid Pro",
-    description: "Městské elektrokolo s nosičem, blatníky a světly, baterie 500 Wh.",
-    price: 48900,
+    category: "Oblečení a obuv",
+    subcategory: "Bundy",
+    title: "Endura MT500 nepromokavá bunda L",
+    description: "Lehká bunda do deště s větráním, bez děr a poškozených zipů.",
+    price: 2790,
     condition: "good"
   }
 ];
