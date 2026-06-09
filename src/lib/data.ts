@@ -1,4 +1,5 @@
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { findCatalogLabel } from "@/lib/catalog";
 import { demoListings, demoProfiles } from "@/lib/mock-data";
 import type {
   Conversation,
@@ -126,12 +127,39 @@ function normalizeSearchTerm(query?: string) {
   return value.replace(/[%_,]/g, " ").replace(/\s+/g, " ").slice(0, 80);
 }
 
+function normalizeCategoryTerm(category?: string) {
+  const value = category?.trim() ?? "";
+
+  if (!value) {
+    return "";
+  }
+
+  return value.replace(/[%_,]/g, " ").replace(/\s+/g, " ").slice(0, 80);
+}
+
 function single<T>(value: T | T[] | null | undefined): T | null {
   if (Array.isArray(value)) {
     return value[0] ?? null;
   }
 
   return value ?? null;
+}
+
+function filterDemoListings(search: string, categoryLabel: string) {
+  const lowerSearch = search.toLowerCase();
+  const lowerCategory = categoryLabel.toLowerCase();
+
+  return demoListings.filter((listing) => {
+    const matchesSearch =
+      !lowerSearch ||
+      [listing.title, listing.description, listing.location, listing.category, conditionLabelsFallback(listing.condition)]
+        .join(" ")
+        .toLowerCase()
+        .includes(lowerSearch);
+    const matchesCategory = !lowerCategory || listing.category.toLowerCase().includes(lowerCategory);
+
+    return matchesSearch && matchesCategory;
+  });
 }
 
 function normalizeListing(raw: RawListing): ListingWithDetails {
@@ -226,22 +254,14 @@ export async function getCurrentUserProfile() {
   return { user, profile: (createdProfile as Profile | null) ?? null };
 }
 
-export async function getListings(query?: string): Promise<ListingWithDetails[]> {
+export async function getListings(query?: string, category?: string): Promise<ListingWithDetails[]> {
   const search = normalizeSearchTerm(query);
+  const categorySlug = normalizeCategoryTerm(category);
+  const categoryLabel = categorySlug ? findCatalogLabel(categorySlug) ?? categorySlug : "";
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
-    if (!search) {
-      return demoListings;
-    }
-
-    const lowerSearch = search.toLowerCase();
-    return demoListings.filter((listing) =>
-      [listing.title, listing.description, listing.location, listing.category, conditionLabelsFallback(listing.condition)]
-        .join(" ")
-        .toLowerCase()
-        .includes(lowerSearch)
-    );
+    return filterDemoListings(search, categoryLabel);
   }
 
   let request = supabase
@@ -249,6 +269,10 @@ export async function getListings(query?: string): Promise<ListingWithDetails[]>
     .select(listingSelect)
     .eq("status", "active")
     .order("created_at", { ascending: false });
+
+  if (categoryLabel) {
+    request = request.ilike("category", `%${categoryLabel}%`);
+  }
 
   if (search) {
     const pattern = `%${search}%`;
@@ -258,12 +282,16 @@ export async function getListings(query?: string): Promise<ListingWithDetails[]>
   }
 
   const { data, error } = await request;
+  const matchingDemoListings = filterDemoListings(search, categoryLabel);
 
   if (error || !data) {
-    return search ? [] : demoListings;
+    return matchingDemoListings;
   }
 
-  return data.map((item) => normalizeListing(item as RawListing));
+  const databaseListings = data.map((item) => normalizeListing(item as RawListing));
+  const databaseIds = new Set(databaseListings.map((listing) => listing.id));
+
+  return [...databaseListings, ...matchingDemoListings.filter((listing) => !databaseIds.has(listing.id))];
 }
 
 function conditionLabelsFallback(condition: ListingWithDetails["condition"]) {
@@ -378,8 +406,11 @@ export async function getPublicProfile(userId: string) {
     .order("created_at", { ascending: false });
 
   return {
-    profile: profile as Profile | null,
-    listings: (listings ?? []).map((item) => normalizeListing(item as RawListing))
+    profile: (profile as Profile | null) ?? demoProfiles.find((item) => item.id === userId) ?? null,
+    listings: [
+      ...(listings ?? []).map((item) => normalizeListing(item as RawListing)),
+      ...demoListings.filter((listing) => listing.seller_id === userId && listing.status === "active")
+    ]
   };
 }
 
@@ -496,5 +527,5 @@ export async function getProfileById(id: string): Promise<Profile | null> {
     .eq("id", id)
     .maybeSingle();
 
-  return data as Profile | null;
+  return (data as Profile | null) ?? demoProfiles.find((profile) => profile.id === id) ?? null;
 }
