@@ -17,9 +17,9 @@ export default async function SignUpPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="mx-auto flex min-h-[78vh] max-w-md flex-col justify-center px-5 py-8">
+    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-6 sm:px-5 md:py-8">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Registrace</p>
-      <h1 className="mt-1 text-3xl font-black text-ink">Vytvořit účet</h1>
+      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Vytvořit účet</h1>
       <p className="mt-2 text-sm leading-6 text-zinc-600">Stačí email, heslo, zobrazované jméno a město.</p>
 
       <div className="mt-5">

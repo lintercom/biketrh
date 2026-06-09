@@ -23,13 +23,13 @@ export default async function ListingsPage({ searchParams }: PageProps) {
       : "Inzeráty";
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-moss">
             {categoryLabel ? "Kategorie" : "Komponenty"}
           </p>
-          <h1 className="mt-1 text-3xl font-black text-ink">{title}</h1>
+          <h1 className="mt-1 break-words text-2xl font-black text-ink sm:text-3xl">{title}</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-600">
             {query
               ? "Hledáme v názvech, popisech, lokalitách a dalších údajích aktivních inzerátů."
@@ -38,7 +38,7 @@ export default async function ListingsPage({ searchParams }: PageProps) {
                 : "Nejnovější nabídky cyklo komponentů od lidí z bike komunity."}
           </p>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-semibold text-zinc-700">
+        <div className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-semibold text-zinc-700">
           <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
           Nejnovější první
         </div>

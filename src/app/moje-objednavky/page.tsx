@@ -19,9 +19,9 @@ export default async function MyOrdersPage() {
   const selling = orders.filter((order) => order.seller_id === user.id);
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-5xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Objednávky</p>
-      <h1 className="mt-1 text-3xl font-black text-ink">Moje objednávky</h1>
+      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Moje objednávky</h1>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <OrderSection title="Nakupuji" orders={buying} currentUserId={user.id} empty="Zatím nemáte žádné nákupy." />
@@ -43,7 +43,7 @@ function OrderSection({
   empty: string;
 }) {
   return (
-    <section>
+    <section className="min-w-0">
       <h2 className="text-xl font-bold text-ink">{title}</h2>
       <div className="mt-3 space-y-3">
         {orders.length > 0 ? (
@@ -63,15 +63,15 @@ function OrderRow({ order, currentUserId }: { order: OrderWithDetails; currentUs
   return (
     <Link
       href={`/objednavky/${order.id}`}
-      className="flex gap-3 rounded-lg border border-line bg-white p-3 shadow-soft hover:border-moss"
+      className="flex min-w-0 gap-3 rounded-lg border border-line bg-white p-3 shadow-soft hover:border-moss"
     >
       <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-fog">
         {image ? <img src={image} alt={order.listing.title} className="h-full w-full object-cover" /> : null}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="truncate font-semibold text-ink">{order.listing.title}</h3>
+            <h3 className="line-clamp-2 font-semibold leading-5 text-ink">{order.listing.title}</h3>
             <p className="mt-1 text-sm font-bold text-ink">{formatPrice(order.listing.price)}</p>
             <p className="mt-1 truncate text-xs text-zinc-600">S {otherProfile.display_name}</p>
             <p className="mt-1 text-xs text-zinc-500">Vytvořeno {formatShortDate(order.created_at)}</p>

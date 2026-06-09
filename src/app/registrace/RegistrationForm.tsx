@@ -88,7 +88,7 @@ export function RegistrationForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
+    <form onSubmit={handleSubmit} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
       {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</div> : null}
 
       <div>

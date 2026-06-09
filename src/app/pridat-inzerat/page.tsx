@@ -19,9 +19,9 @@ export default async function AddListingPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-2xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Nový inzerát</p>
-      <h1 className="mt-1 text-3xl font-black text-ink">Přidat komponent</h1>
+      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Přidat komponent</h1>
       <p className="mt-2 text-sm leading-6 text-zinc-600">
         Kategorie je pro MVP nastavená automaticky na Komponenty.
       </p>
@@ -30,14 +30,12 @@ export default async function AddListingPage({ searchParams }: PageProps) {
         <ConfigNotice />
       </div>
 
-      {chyba ? (
-        <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div>
-      ) : null}
+      {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
 
       <form
         action={createListingAction}
         encType="multipart/form-data"
-        className="mt-5 space-y-5 rounded-lg border border-line bg-white p-5 shadow-soft"
+        className="mt-5 space-y-5 rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5"
       >
         <div>
           <label className="text-sm font-semibold text-ink" htmlFor="title">
@@ -88,12 +86,12 @@ export default async function AddListingPage({ searchParams }: PageProps) {
           </label>
           <div className="mt-2 rounded-lg border border-dashed border-line bg-fog p-4">
             <label htmlFor="photos" className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-ink">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-moss">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-moss">
                 <Camera className="h-5 w-5" aria-hidden="true" />
               </span>
               Vybrat fotografie z galerie
             </label>
-            <input id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple className="mt-3" />
+            <input id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple className="mt-3 text-sm" />
             <p className="mt-2 text-xs text-zinc-500">Nahrajte až 8 fotek, první bude hlavní.</p>
           </div>
         </div>

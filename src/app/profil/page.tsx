@@ -24,9 +24,9 @@ export default async function ProfilePage({ searchParams }: PageProps) {
   const city = profile?.city ?? "";
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-3xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Profil</p>
-      <h1 className="mt-1 text-3xl font-black text-ink">Můj profil</h1>
+      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Můj profil</h1>
 
       <div className="mt-5">
         <ConfigNotice />
@@ -35,8 +35,8 @@ export default async function ProfilePage({ searchParams }: PageProps) {
       {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
       {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
 
-      <section className="mt-5 rounded-lg border border-line bg-white p-5 shadow-soft">
-        <div className="flex items-center gap-4">
+      <section className="mt-5 rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
+        <div className="flex min-w-0 items-center gap-4">
           <Avatar
             profile={{
               display_name: displayName,
@@ -44,9 +44,9 @@ export default async function ProfilePage({ searchParams }: PageProps) {
             }}
             size="lg"
           />
-          <div>
-            <h2 className="text-xl font-bold text-ink">{displayName || "Nový uživatel"}</h2>
-            <p className="text-sm text-zinc-600">{city || "Město není vyplněné"}</p>
+          <div className="min-w-0">
+            <h2 className="truncate text-xl font-bold text-ink">{displayName || "Nový uživatel"}</h2>
+            <p className="truncate text-sm text-zinc-600">{city || "Město není vyplněné"}</p>
             <p className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-zinc-700">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
               {profile ? formatRating(profile) : "Bez hodnocení"}
@@ -55,7 +55,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      <form action={updateProfileAction} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
+      <form action={updateProfileAction} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
         <div>
           <label className="text-sm font-semibold text-ink" htmlFor="display_name">
             Zobrazované jméno

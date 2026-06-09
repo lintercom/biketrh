@@ -19,9 +19,9 @@ export default async function SignInPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="mx-auto flex min-h-[78vh] max-w-md flex-col justify-center px-5 py-8">
+    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-6 sm:px-5 md:py-8">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Přihlášení</p>
-      <h1 className="mt-1 text-3xl font-black text-ink">Vítejte zpět</h1>
+      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Vítejte zpět</h1>
       <p className="mt-2 text-sm leading-6 text-zinc-600">Přihlaste se a pokračujte v obchodování u konkrétních inzerátů.</p>
 
       <div className="mt-5">
@@ -31,7 +31,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
       {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
       {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
 
-      <form action={signInAction} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-5 shadow-soft">
+      <form action={signInAction} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
         <input type="hidden" name="next" value={next} />
         <div>
           <label className="text-sm font-semibold text-ink" htmlFor="email">

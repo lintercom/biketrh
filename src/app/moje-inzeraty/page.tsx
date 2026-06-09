@@ -23,9 +23,9 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
   const listings = await getUserListings(user.id);
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Prodej</p>
-      <h1 className="mt-1 text-3xl font-black text-ink">Moje inzeráty</h1>
+      <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Moje inzeráty</h1>
       <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-600">
         Spravujte aktivní nabídky, skryté inzeráty i komponenty, které už jsou prodané.
       </p>
@@ -41,12 +41,12 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
               listing={listing}
               showStatus
               actions={
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid gap-2 min-[380px]:grid-cols-2">
                   <Link
                     href={`/moje-inzeraty/${listing.id}/upravit`}
-                    className="inline-flex min-h-10 items-center justify-center gap-1 rounded-lg border border-line bg-white px-2 text-xs font-semibold text-ink hover:bg-fog"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:bg-fog"
                   >
-                    <Pencil className="h-4 w-4" aria-hidden="true" />
+                    <Pencil className="h-4 w-4 shrink-0" aria-hidden="true" />
                     Upravit
                   </Link>
                   {listing.status === "hidden" ? (
@@ -95,7 +95,7 @@ function ListingAction({
       <input type="hidden" name="status" value={status} />
       <button
         type="submit"
-        className="inline-flex min-h-10 w-full items-center justify-center gap-1 rounded-lg border border-line bg-white px-2 text-xs font-semibold text-ink hover:bg-fog"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-semibold text-ink hover:bg-fog"
       >
         {icon}
         {label}

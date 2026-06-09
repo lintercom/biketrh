@@ -27,13 +27,13 @@ export default async function MessagesPage({ params, searchParams }: PageProps) 
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-3xl flex-col px-5 py-5 md:min-h-[calc(100vh-4rem)] md:px-6 md:py-8">
+    <div className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-3xl flex-col px-4 py-4 sm:px-5 md:min-h-[calc(100vh-4rem)] md:px-6 md:py-8">
       <header className="rounded-lg border border-line bg-white p-4 shadow-soft">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           {conversation.receiver ? <Avatar profile={conversation.receiver} /> : null}
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-black text-ink">{conversation.listing.title}</h1>
-            <p className="text-sm text-zinc-600">
+            <h1 className="truncate text-lg font-black text-ink sm:text-xl">{conversation.listing.title}</h1>
+            <p className="truncate text-sm text-zinc-600">
               {conversation.receiver ? `Konverzace s ${conversation.receiver.display_name}` : "Konverzace k inzerátu"}
             </p>
           </div>
@@ -42,7 +42,7 @@ export default async function MessagesPage({ params, searchParams }: PageProps) 
 
       {chyba ? <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
 
-      <section className="mt-4 flex-1 space-y-3 rounded-lg border border-line bg-white p-4 shadow-soft">
+      <section className="mt-4 flex-1 space-y-3 rounded-lg border border-line bg-white p-3 shadow-soft sm:p-4">
         {conversation.messages.length > 0 ? (
           conversation.messages.map((message) => {
             const mine = message.sender_id === user.id;
@@ -51,11 +51,11 @@ export default async function MessagesPage({ params, searchParams }: PageProps) 
                 <div
                   className={
                     mine
-                      ? "max-w-[82%] rounded-lg bg-moss px-4 py-3 text-white"
-                      : "max-w-[82%] rounded-lg bg-fog px-4 py-3 text-ink"
+                      ? "max-w-[88%] rounded-lg bg-moss px-4 py-3 text-white sm:max-w-[82%]"
+                      : "max-w-[88%] rounded-lg bg-fog px-4 py-3 text-ink sm:max-w-[82%]"
                   }
                 >
-                  <p className="whitespace-pre-line text-sm leading-6">{message.text}</p>
+                  <p className="whitespace-pre-line break-words text-sm leading-6">{message.text}</p>
                   <p className={mine ? "mt-1 text-xs text-white/75" : "mt-1 text-xs text-zinc-500"}>
                     {formatShortDate(message.created_at)}
                   </p>

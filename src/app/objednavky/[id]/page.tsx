@@ -37,10 +37,10 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
   const image = order.listing.images[0]?.image_url;
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-4xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
       <p className="text-sm font-semibold uppercase tracking-wide text-moss">Objednávka</p>
       <div className="mt-1 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <h1 className="text-3xl font-black text-ink">{order.listing.title}</h1>
+        <h1 className="break-words text-2xl font-black text-ink sm:text-3xl">{order.listing.title}</h1>
         <OrderStatusBadge status={order.status} />
       </div>
 
@@ -48,21 +48,21 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
       {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_320px]">
-        <section className="space-y-5">
+        <section className="min-w-0 space-y-5">
           <div className="rounded-lg border border-line bg-white p-4 shadow-soft">
-            <div className="flex gap-4">
-              <div className="h-28 w-28 shrink-0 overflow-hidden rounded-lg bg-fog">
+            <div className="flex min-w-0 gap-3 sm:gap-4">
+              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-fog sm:h-28 sm:w-28">
                 {image ? <img src={image} alt={order.listing.title} className="h-full w-full object-cover" /> : null}
               </div>
               <div className="min-w-0">
-                <h2 className="font-bold text-ink">{order.listing.title}</h2>
+                <h2 className="line-clamp-2 font-bold leading-5 text-ink">{order.listing.title}</h2>
                 <p className="mt-1 text-xl font-black text-ink">{formatPrice(order.listing.price)}</p>
-                <p className="mt-2 text-sm text-zinc-600">{order.listing.location}</p>
+                <p className="mt-2 truncate text-sm text-zinc-600">{order.listing.location}</p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-lg border border-line bg-white p-5 shadow-soft">
+          <div className="rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
             <h2 className="text-lg font-bold text-ink">Účastníci</h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <PersonBlock label="Kupující" name={order.buyer.display_name} city={order.buyer.city} avatar={order.buyer} />
@@ -71,7 +71,7 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
           </div>
 
           {order.status === "completed" ? (
-            <div className="rounded-lg border border-line bg-white p-5 shadow-soft">
+            <div className="rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
               <h2 className="text-lg font-bold text-ink">Hodnocení po obchodu</h2>
               {hasReviewed ? (
                 <p className="mt-3 rounded-lg bg-fog p-4 text-sm text-zinc-700">Hodnocení už je uložené.</p>
@@ -109,8 +109,8 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
           ) : null}
         </section>
 
-        <aside className="space-y-4">
-          <div className="rounded-lg border border-line bg-white p-5 shadow-soft">
+        <aside className="min-w-0 space-y-4">
+          <div className="rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
             <h2 className="text-lg font-bold text-ink">Stav</h2>
             <p className="mt-2 text-sm text-zinc-600">Vytvořeno {formatShortDate(order.created_at)}</p>
             <div className="mt-4 space-y-2">
@@ -150,12 +150,12 @@ function PersonBlock({
   avatar: Parameters<typeof Avatar>[0]["profile"];
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-fog p-3">
+    <div className="flex min-w-0 items-center gap-3 rounded-lg bg-fog p-3">
       <Avatar profile={avatar} />
-      <div>
+      <div className="min-w-0">
         <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{label}</p>
-        <p className="font-semibold text-ink">{name}</p>
-        <p className="text-sm text-zinc-600">{city}</p>
+        <p className="truncate font-semibold text-ink">{name}</p>
+        <p className="truncate text-sm text-zinc-600">{city}</p>
       </div>
     </div>
   );
