@@ -12,6 +12,7 @@ import {
   List,
   LogOut,
   Menu,
+  MessageCircle,
   Search,
   ShoppingBag,
   User,
@@ -34,12 +35,39 @@ const mobileMenuItems = [
   { href: categoryHref("komponenty"), label: "Komponenty", icon: Grid2X2 }
 ];
 
+const bottomNavItems = [
+  { href: "/", label: "Domů", icon: HomeIcon, match: ["/"] },
+  { href: "/inzeraty", label: "Procházet", icon: Search, match: ["/inzeraty", "/uzivatel", "/uzivatele"] },
+  { href: "/pridat-inzerat", label: "Prodávat", icon: CirclePlus, match: ["/pridat-inzerat"] },
+  { href: "/moje-objednavky", label: "Zprávy", icon: MessageCircle, match: ["/moje-objednavky", "/objednavky", "/zpravy"] },
+  { href: "/profil", label: "Profil", icon: User, match: ["/profil", "/prihlaseni", "/registrace"] }
+];
+
+function HomeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+      <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    </svg>
+  );
+}
+
 function isActive(pathname: string, href: string) {
   if (href === "/") {
     return pathname === "/";
   }
 
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function isBottomActive(pathname: string, matches: string[]) {
+  return matches.some((match) => {
+    if (match === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === match || pathname.startsWith(`${match}/`);
+  });
 }
 
 function CatalogMenu({
@@ -352,6 +380,38 @@ export function Navigation({ profile }: { profile: Profile | null }) {
           </div>
         ) : null}
       </header>
+
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_28px_rgba(23,32,27,0.08)] backdrop-blur md:hidden">
+        <div className="grid h-16 grid-cols-5">
+          {bottomNavItems.map((item) => {
+            const Icon = item.icon;
+            const active = isBottomActive(pathname, item.match);
+            const selling = item.href === "/pridat-inzerat";
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={clsx(
+                  "flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[11px] font-semibold",
+                  active ? "text-moss" : "text-zinc-500"
+                )}
+              >
+                <span
+                  className={clsx(
+                    "inline-flex h-7 w-7 items-center justify-center rounded-full",
+                    selling && "bg-moss text-white",
+                    active && !selling && "text-moss"
+                  )}
+                >
+                  <Icon className={clsx("h-5 w-5", active ? "stroke-[2.5]" : "")} aria-hidden="true" />
+                </span>
+                <span className="max-w-full truncate">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }
