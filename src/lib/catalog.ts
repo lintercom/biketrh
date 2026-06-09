@@ -1,6 +1,5 @@
-import { Bike, Bolt, Grid2X2 } from "lucide-react";
-
 export type ListingCategoryName = "Komponenty" | "Kola" | "Elektrokola";
+export type CatalogIconName = "components" | "bikes" | "ebikes";
 
 export type CatalogSubcategory = {
   slug: string;
@@ -10,7 +9,7 @@ export type CatalogSubcategory = {
 export type CatalogCategory = {
   slug: string;
   label: ListingCategoryName;
-  icon: typeof Grid2X2;
+  icon: CatalogIconName;
   subcategories: CatalogSubcategory[];
 };
 
@@ -18,7 +17,7 @@ export const catalogCategories: CatalogCategory[] = [
   {
     slug: "komponenty",
     label: "Komponenty",
-    icon: Grid2X2,
+    icon: "components",
     subcategories: [
       { slug: "odpruzeni", label: "Odpružení" },
       { slug: "pohon", label: "Pohon" },
@@ -34,7 +33,7 @@ export const catalogCategories: CatalogCategory[] = [
   {
     slug: "kola",
     label: "Kola",
-    icon: Bike,
+    icon: "bikes",
     subcategories: [
       { slug: "mtb", label: "MTB" },
       { slug: "enduro", label: "Enduro" },
@@ -51,7 +50,7 @@ export const catalogCategories: CatalogCategory[] = [
   {
     slug: "elektrokola",
     label: "Elektrokola",
-    icon: Bolt,
+    icon: "ebikes",
     subcategories: [
       { slug: "mtb-e-bike", label: "MTB e-bike" },
       { slug: "trail-e-bike", label: "Trail e-bike" },

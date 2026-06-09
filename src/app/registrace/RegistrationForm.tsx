@@ -10,6 +10,11 @@ function textField(formData: FormData, name: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function confirmationUrl(email: string) {
+  const params = new URLSearchParams({ email });
+  return `/registrace/potvrzeni?${params.toString()}`;
+}
+
 export function RegistrationForm() {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -60,6 +65,8 @@ export function RegistrationForm() {
       setPending(false);
       if (signUpError.status === 429) {
         setError("Registrace je dočasně omezená. Zkuste to prosím za chvíli znovu.");
+      } else if (signUpError.message.toLowerCase().includes("already")) {
+        setError("Účet s tímto emailem už může existovat. Zkuste se přihlásit nebo použít jiný email.");
       } else {
         setError(signUpError.message || "Registrace se nepovedla. Zkuste jiný email nebo silnější heslo.");
       }
@@ -84,7 +91,7 @@ export function RegistrationForm() {
       return;
     }
 
-    router.push("/prihlaseni?zprava=Registrace je vytvořená. Pokud Supabase vyžaduje ověření, potvrďte email.");
+    router.push(confirmationUrl(email));
   }
 
   return (

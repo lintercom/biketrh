@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
+  Bike,
+  Bolt,
   Camera,
   ChevronDown,
   CirclePlus,
@@ -21,8 +23,14 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { signOutAction } from "@/app/actions";
-import { catalogCategories, categoryHref } from "@/lib/catalog";
+import { catalogCategories, categoryHref, type CatalogIconName } from "@/lib/catalog";
 import type { Profile } from "@/lib/types";
+
+const categoryIcons: Record<CatalogIconName, typeof Grid2X2> = {
+  components: Grid2X2,
+  bikes: Bike,
+  ebikes: Bolt
+};
 
 const mobileMenuItems = [
   { href: "/inzeraty", label: "Inzeráty", icon: List },
@@ -160,20 +168,51 @@ export function Navigation({ profile }: { profile: Profile | null }) {
           </div>
         </div>
 
-        <div className="border-t border-line">
-          <div className="mx-auto flex h-16 max-w-[1800px] items-center gap-10 overflow-hidden px-8">
+        <div className="relative border-t border-line">
+          <div className="mx-auto flex h-16 max-w-[1800px] items-center gap-2 px-8">
             {catalogCategories.map((category) => {
-              const Icon = category.icon;
+              const Icon = categoryIcons[category.icon];
 
               return (
-                <Link
-                  key={category.label}
-                  href={categoryHref(category.label)}
-                  className="relative inline-flex h-16 shrink-0 items-center gap-2 text-lg font-semibold text-ink hover:text-moss"
-                >
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                  {category.label}
-                </Link>
+                <div key={category.label} className="group h-16">
+                  <Link
+                    href={categoryHref(category.label)}
+                    className="relative inline-flex h-16 shrink-0 items-center gap-2 px-4 text-lg font-semibold text-ink hover:text-moss"
+                  >
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                    {category.label}
+                    <ChevronDown className="h-4 w-4 text-zinc-500" aria-hidden="true" />
+                    <span className="absolute inset-x-4 bottom-0 hidden h-0.5 bg-moss group-hover:block" />
+                  </Link>
+
+                  <div className="invisible absolute left-0 right-0 top-16 z-50 border-t border-line bg-white opacity-0 shadow-[0_18px_30px_rgba(23,32,27,0.12)] transition group-hover:visible group-hover:opacity-100">
+                    <div className="mx-auto grid max-w-[1800px] grid-cols-[280px_minmax(0,1fr)] gap-8 px-8 py-6">
+                      <div>
+                        <Link href={categoryHref(category.label)} className="flex items-center gap-3 rounded-lg bg-[#fff7df] p-4 text-ink hover:text-moss">
+                          <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-moss">
+                            <Icon className="h-6 w-6" aria-hidden="true" />
+                          </span>
+                          <span>
+                            <span className="block text-lg font-black">{category.label}</span>
+                            <span className="mt-1 block text-sm text-zinc-600">Zobrazit všechny inzeráty</span>
+                          </span>
+                        </Link>
+                      </div>
+
+                      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {category.subcategories.map((subcategory) => (
+                          <Link
+                            key={subcategory.label}
+                            href={categoryHref(category.label, subcategory.label)}
+                            className="rounded-lg px-4 py-3 text-base font-semibold text-ink hover:bg-fog hover:text-moss"
+                          >
+                            {subcategory.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>

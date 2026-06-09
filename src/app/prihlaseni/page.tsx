@@ -1,18 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogIn } from "lucide-react";
 import { ConfigNotice } from "@/components/ConfigNotice";
-import { SubmitButton } from "@/components/SubmitButton";
-import { signInAction } from "@/app/actions";
+import { LoginForm } from "./LoginForm";
 import { getCurrentUserProfile } from "@/lib/data";
 
 type PageProps = {
-  searchParams: Promise<{ chyba?: string; zprava?: string; next?: string }>;
+  searchParams: Promise<{ chyba?: string; zprava?: string; next?: string; email?: string }>;
 };
 
 export default async function SignInPage({ searchParams }: PageProps) {
   const { user } = await getCurrentUserProfile();
-  const { chyba, zprava, next = "/profil" } = await searchParams;
+  const { chyba, zprava, next = "/profil", email = "" } = await searchParams;
 
   if (user) {
     redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/profil");
@@ -29,37 +27,20 @@ export default async function SignInPage({ searchParams }: PageProps) {
       </div>
 
       {chyba ? <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
-      {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
+      {zprava ? (
+        <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm leading-6 text-zinc-700">
+          {zprava}
+          {email ? (
+            <div className="mt-3">
+              <Link href={`/registrace/potvrzeni?email=${encodeURIComponent(email)}`} className="font-semibold text-moss hover:text-ink">
+                Poslat potvrzovací email znovu
+              </Link>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
-      <form action={signInAction} className="mt-5 space-y-4 rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5">
-        <input type="hidden" name="next" value={next} />
-        <div>
-          <label className="text-sm font-semibold text-ink" htmlFor="email">
-            Email
-          </label>
-          <input id="email" name="email" type="email" required autoComplete="email" className="mt-2 px-3 py-3" />
-        </div>
-        <div>
-          <label className="text-sm font-semibold text-ink" htmlFor="password">
-            Heslo
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            minLength={6}
-            autoComplete="current-password"
-            className="mt-2 px-3 py-3"
-          />
-        </div>
-        <SubmitButton pendingText="Přihlašuji...">
-          <span className="inline-flex items-center gap-2">
-            <LogIn className="h-4 w-4" aria-hidden="true" />
-            Přihlásit
-          </span>
-        </SubmitButton>
-      </form>
+      <LoginForm next={next} email={email} />
 
       <p className="mt-5 text-center text-sm text-zinc-600">
         Nemáte účet?{" "}
