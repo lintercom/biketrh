@@ -6,8 +6,8 @@ const config: Config = {
     extend: {
       colors: {
         ink: "#17201b",
-        moss: "#0f6a4f",
-        leaf: "#1fa475",
+        moss: "#E6AF00",
+        leaf: "#E6AF00",
         clay: "#b75f32",
         fog: "#f5f7f2",
         line: "#dfe7df"
