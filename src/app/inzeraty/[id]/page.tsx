@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Flag, Heart, MapPin, MessageCircle, MoreVertical, ShieldCheck, Star } from "lucide-react";
 import { clsx } from "clsx";
@@ -37,9 +38,9 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
         <div className="min-w-0">
           <section className="grid gap-1 overflow-hidden rounded-lg md:grid-cols-2">
-            <div className="min-h-[320px] bg-white md:min-h-[620px]">
+            <div className="relative min-h-[320px] bg-white md:min-h-[620px]">
               {mainImage ? (
-                <img src={mainImage} alt={listing.title} className="h-full w-full object-cover" />
+                <Image src={mainImage} alt={listing.title} fill priority sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
               ) : (
                 <div className="flex h-full min-h-[320px] items-center justify-center bg-fog text-sm text-zinc-500">Bez fotografie</div>
               )}
@@ -49,7 +50,7 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
               {(secondaryImages.length > 0 ? secondaryImages : [images[0], images[0]].filter(Boolean)).slice(0, 2).map((image, index) => (
                 <div key={image?.id ? `${image.id}-${index}` : `image-${index}`} className="relative min-h-[230px] bg-white md:min-h-0">
                   {image?.image_url ? (
-                    <img src={image.image_url} alt={listing.title} className="h-full w-full object-cover" />
+                    <Image src={image.image_url} alt={listing.title} fill sizes="(min-width: 1024px) 28vw, 100vw" className="object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-fog text-sm text-zinc-500">Bez fotografie</div>
                   )}

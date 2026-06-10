@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
@@ -70,52 +69,6 @@ export async function signInAction(formData: FormData) {
 
   revalidatePath("/", "layout");
   redirect(next);
-}
-
-export async function signUpAction(formData: FormData) {
-  const supabase = await requireSupabase("/registrace");
-  const email = textField(formData, "email");
-  const password = textField(formData, "password");
-  const displayName = textField(formData, "display_name");
-  const city = textField(formData, "city");
-  const origin = (await headers()).get("origin") ?? "http://localhost:3000";
-
-  if (!email || !password || !displayName || !city) {
-    withError("/registrace", "Vyplňte email, heslo, zobrazované jméno a město.");
-  }
-
-  if (password.length < 6) {
-    withError("/registrace", "Heslo musí mít alespoň 6 znaků.");
-  }
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback`,
-      data: {
-        display_name: displayName,
-        city
-      }
-    }
-  });
-
-  if (error) {
-    withError("/registrace", "Registrace se nepovedla. Zkuste jiný email nebo silnější heslo.");
-  }
-
-  if (data.session && data.user) {
-    await supabase.from("profiles").upsert({
-      id: data.user.id,
-      display_name: displayName,
-      city
-    });
-
-    revalidatePath("/", "layout");
-    redirect("/profil");
-  }
-
-  redirect("/prihlaseni?zprava=Registrace je vytvořená. Pokud Supabase vyžaduje ověření, potvrďte email.");
 }
 
 export async function signOutAction() {

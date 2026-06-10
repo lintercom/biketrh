@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
@@ -65,8 +66,8 @@ function OrderRow({ order, currentUserId }: { order: OrderWithDetails; currentUs
       href={`/objednavky/${order.id}`}
       className="flex min-w-0 gap-3 rounded-lg border border-line bg-white p-3 shadow-soft hover:border-moss"
     >
-      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-fog">
-        {image ? <img src={image} alt={order.listing.title} className="h-full w-full object-cover" /> : null}
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-fog">
+        {image ? <Image src={image} alt={order.listing.title} fill sizes="80px" className="object-cover" /> : null}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-start justify-between gap-2">

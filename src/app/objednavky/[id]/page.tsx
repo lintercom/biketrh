@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { CheckCircle, MessageCircle, Star, XCircle } from "lucide-react";
@@ -51,8 +52,8 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
         <section className="min-w-0 space-y-5">
           <div className="rounded-lg border border-line bg-white p-4 shadow-soft">
             <div className="flex min-w-0 gap-3 sm:gap-4">
-              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-fog sm:h-28 sm:w-28">
-                {image ? <img src={image} alt={order.listing.title} className="h-full w-full object-cover" /> : null}
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-fog sm:h-28 sm:w-28">
+                {image ? <Image src={image} alt={order.listing.title} fill sizes="112px" className="object-cover" /> : null}
               </div>
               <div className="min-w-0">
                 <h2 className="line-clamp-2 font-bold leading-5 text-ink">{order.listing.title}</h2>

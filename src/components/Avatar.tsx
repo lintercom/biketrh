@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { initials } from "@/lib/format";
 import type { Profile } from "@/lib/types";
 
@@ -12,12 +13,20 @@ const sizeClass = {
   lg: "h-16 w-16 text-xl"
 };
 
+const imageSize = {
+  sm: 36,
+  md: 44,
+  lg: 64
+};
+
 export function Avatar({ profile, size = "md" }: AvatarProps) {
   if (profile.avatar_url) {
     return (
-      <img
+      <Image
         src={profile.avatar_url}
         alt={profile.display_name}
+        width={imageSize[size]}
+        height={imageSize[size]}
         className={`${sizeClass[size]} rounded-full object-cover`}
       />
     );

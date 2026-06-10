@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { MapPin, Star } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
@@ -17,9 +18,9 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
   return (
     <article className="min-w-0 overflow-hidden rounded-lg border border-line bg-white shadow-soft">
       <Link href={`/inzeraty/${listing.id}`} className="block">
-        <div className="aspect-[4/3] bg-fog">
+        <div className="relative aspect-[4/3] bg-fog">
           {mainImage ? (
-            <img src={mainImage} alt={listing.title} className="h-full w-full object-cover" />
+            <Image src={mainImage} alt={listing.title} fill sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
           ) : (
             <div className="flex h-full items-center justify-center px-6 text-center text-base text-zinc-500">
               Fotografie bude doplněna
