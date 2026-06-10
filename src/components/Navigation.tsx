@@ -4,18 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  Camera,
   ChevronDown,
   CirclePlus,
   Grid2X2,
-  HelpCircle,
   Home,
-  List,
   LogOut,
   Menu,
   MessageCircle,
-  Shirt,
   Search,
+  Shirt,
   ShoppingBag,
   User,
   X
@@ -32,13 +29,6 @@ const categoryIcons: Record<CatalogIconName, typeof Grid2X2> = {
 };
 
 const mobileMenuItems = [
-  { href: "/inzeraty", label: "Inzeráty", icon: List },
-  { href: "/pridat-inzerat", label: "Přidat inzerát", icon: CirclePlus },
-  { href: "/moje-inzeraty", label: "Moje inzeráty", icon: List },
-  { href: "/moje-objednavky", label: "Moje objednávky", icon: ShoppingBag },
-  { href: "/profil", label: "Profil", icon: User },
-  { href: "/prihlaseni", label: "Přihlášení", icon: User },
-  { href: "/registrace", label: "Registrace", icon: User },
   { href: categoryHref("Doplňky a příslušenství"), label: "Doplňky", icon: ShoppingBag },
   { href: categoryHref("Komponenty"), label: "Komponenty", icon: Grid2X2 },
   { href: categoryHref("Oblečení a obuv"), label: "Oblečení a obuv", icon: Shirt }
@@ -119,7 +109,6 @@ export function Navigation({ profile }: { profile: Profile | null }) {
                 placeholder={searchPlaceholder}
                 className="h-full min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-lg text-ink shadow-none placeholder:text-zinc-500 focus:border-0 focus:shadow-none"
               />
-              {searchTarget === "listings" ? <Camera className="h-6 w-6 shrink-0 text-moss" aria-hidden="true" /> : null}
             </form>
           </div>
 
@@ -149,23 +138,6 @@ export function Navigation({ profile }: { profile: Profile | null }) {
             >
               Přidat inzerát
             </Link>
-
-            <Link
-              href="/inzeraty"
-              aria-label="Nápověda"
-              className="inline-flex h-14 w-14 items-center justify-center rounded-lg bg-zinc-50 text-zinc-600 hover:bg-fog"
-            >
-              <HelpCircle className="h-8 w-8" aria-hidden="true" />
-            </Link>
-
-            <button
-              type="button"
-              className="inline-flex min-h-14 items-center gap-2 rounded-lg bg-white px-3 text-lg font-semibold text-zinc-700"
-              aria-label="Jazyk"
-            >
-              CZ
-              <ChevronDown className="h-5 w-5 text-zinc-500" aria-hidden="true" />
-            </button>
           </div>
         </div>
 
@@ -187,19 +159,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
                   </Link>
 
                   <div className="invisible absolute left-0 right-0 top-16 z-50 border-t border-line bg-white opacity-0 shadow-[0_18px_30px_rgba(23,32,27,0.12)] transition group-hover:visible group-hover:opacity-100">
-                    <div className="mx-auto grid max-w-[1800px] grid-cols-[280px_minmax(0,1fr)] gap-8 px-8 py-6">
-                      <div>
-                        <Link href={categoryHref(category.label)} className="flex items-center gap-3 rounded-lg bg-[#fff7df] p-4 text-ink hover:text-moss">
-                          <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-moss">
-                            <Icon className="h-6 w-6" aria-hidden="true" />
-                          </span>
-                          <span>
-                            <span className="block text-lg font-black">{category.label}</span>
-                            <span className="mt-1 block text-sm text-zinc-600">Zobrazit všechny inzeráty</span>
-                          </span>
-                        </Link>
-                      </div>
-
+                    <div className="mx-auto max-w-[1800px] px-8 py-6">
                       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {category.subcategories.map((subcategory) => (
                           <Link
@@ -220,7 +180,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
         </div>
       </header>
 
-      <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur md:hidden">
+      <header className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur md:hidden">
         <div className="mobile-safe-top flex min-h-14 items-center justify-between gap-3 px-4">
           <Logo compact />
           <button
@@ -252,8 +212,42 @@ export function Navigation({ profile }: { profile: Profile | null }) {
         </div>
 
         {mobileMenuOpen ? (
-          <div id="mobile-navigation" className="border-t border-line bg-white px-4 pb-4 shadow-[0_18px_30px_rgba(23,32,27,0.12)]">
-            <nav className="grid gap-1 py-3" aria-label="Mobilní navigace">
+          <div id="mobile-navigation" className="border-t border-line bg-white pb-4 shadow-[0_18px_30px_rgba(23,32,27,0.12)]">
+            <div className="space-y-2 border-b border-line px-4 py-4 text-center">
+              <Link
+                href="/pridat-inzerat"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-moss px-5 py-3 text-sm font-bold text-white hover:bg-[#c99700]"
+              >
+                Přidat inzerát
+              </Link>
+
+              {profile ? (
+                <Link
+                  href="/profil"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-moss bg-white px-5 py-3 text-sm font-semibold text-moss hover:bg-[#fff7df]"
+                >
+                  Profil
+                </Link>
+              ) : (
+                <div className="flex min-h-11 items-center justify-center rounded-lg border border-moss bg-white px-5 py-3 text-sm font-semibold text-moss">
+                  <Link href="/registrace" onClick={() => setMobileMenuOpen(false)} className="hover:text-ink">
+                    Registruj se
+                  </Link>
+                  <span className="mx-2 text-moss">|</span>
+                  <Link href="/prihlaseni" onClick={() => setMobileMenuOpen(false)} className="hover:text-ink">
+                    Přihlas se
+                  </Link>
+                </div>
+              )}
+
+              <Link href="/inzeraty" onClick={() => setMobileMenuOpen(false)} className="inline-flex min-h-10 items-center text-sm font-semibold text-moss hover:text-ink">
+                Průvodce po BikeTrh
+              </Link>
+            </div>
+
+            <nav className="grid gap-1 px-4 py-3" aria-label="Mobilní navigace">
               {mobileMenuItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(pathname, item.href);

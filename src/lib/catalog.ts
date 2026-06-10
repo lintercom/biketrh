@@ -15,34 +15,6 @@ export type CatalogCategory = {
 
 export const catalogCategories: CatalogCategory[] = [
   {
-    slug: "doplnky-a-prislusenstvi",
-    label: "Doplňky a příslušenství",
-    icon: "accessories",
-    subcategories: [
-      { slug: "helmy", label: "Helmy" },
-      { slug: "detske-sedacky-a-voziky", label: "Dětské sedačky a vozíky" },
-      { slug: "cyklocomputery-a-gps", label: "Cyklocomputery a GPS" },
-      { slug: "bryle", label: "Brýle" },
-      { slug: "ostatni-prislusenstvi", label: "Ostatní příslušenství" },
-      { slug: "chranice-a-pateraky", label: "Chrániče a páteřáky" },
-      { slug: "brasny-a-tasky", label: "Brašny a tašky" },
-      { slug: "nosice-a-zahradky-kol", label: "Nosiče a zahrádky kol" },
-      { slug: "cyklonaradi-a-montazni-sady", label: "Cyklonářadí a montážní sady" },
-      { slug: "nosice-na-kolo", label: "Nosiče na kolo" },
-      { slug: "pumpy", label: "Pumpy" },
-      { slug: "kosiky-a-lahve", label: "Košíky a lahve" },
-      { slug: "odrazky-a-svetla", label: "Odrazky a světla" },
-      { slug: "batohy-a-ledvinky", label: "Batohy a ledvinky" },
-      { slug: "obaly-na-kola", label: "Obaly na kola" },
-      { slug: "prislusenstvi-k-elektrokolum", label: "Příslušenství k elektrokolům" },
-      { slug: "blatniky-kryty", label: "Blatníky, kryty" },
-      { slug: "darky-pro-cyklisty", label: "Dárky pro cyklisty" },
-      { slug: "vyziva", label: "Výživa" },
-      { slug: "zamky", label: "Zámky" },
-      { slug: "polepy-a-ochranne-folie", label: "Polepy a ochranné fólie" }
-    ]
-  },
-  {
     slug: "komponenty",
     label: "Komponenty",
     icon: "components",
@@ -73,6 +45,34 @@ export const catalogCategories: CatalogCategory[] = [
       { slug: "presmykace", label: "Přesmykače" },
       { slug: "hlavova-slozeni", label: "Hlavová složení" },
       { slug: "bowdeny-lanka", label: "Bowdeny, lanka" }
+    ]
+  },
+  {
+    slug: "doplnky-a-prislusenstvi",
+    label: "Doplňky a příslušenství",
+    icon: "accessories",
+    subcategories: [
+      { slug: "helmy", label: "Helmy" },
+      { slug: "detske-sedacky-a-voziky", label: "Dětské sedačky a vozíky" },
+      { slug: "cyklocomputery-a-gps", label: "Cyklocomputery a GPS" },
+      { slug: "bryle", label: "Brýle" },
+      { slug: "ostatni-prislusenstvi", label: "Ostatní příslušenství" },
+      { slug: "chranice-a-pateraky", label: "Chrániče a páteřáky" },
+      { slug: "brasny-a-tasky", label: "Brašny a tašky" },
+      { slug: "nosice-a-zahradky-kol", label: "Nosiče a zahrádky kol" },
+      { slug: "cyklonaradi-a-montazni-sady", label: "Cyklonářadí a montážní sady" },
+      { slug: "nosice-na-kolo", label: "Nosiče na kolo" },
+      { slug: "pumpy", label: "Pumpy" },
+      { slug: "kosiky-a-lahve", label: "Košíky a lahve" },
+      { slug: "odrazky-a-svetla", label: "Odrazky a světla" },
+      { slug: "batohy-a-ledvinky", label: "Batohy a ledvinky" },
+      { slug: "obaly-na-kola", label: "Obaly na kola" },
+      { slug: "prislusenstvi-k-elektrokolum", label: "Příslušenství k elektrokolům" },
+      { slug: "blatniky-kryty", label: "Blatníky, kryty" },
+      { slug: "darky-pro-cyklisty", label: "Dárky pro cyklisty" },
+      { slug: "vyziva", label: "Výživa" },
+      { slug: "zamky", label: "Zámky" },
+      { slug: "polepy-a-ochranne-folie", label: "Polepy a ochranné fólie" }
     ]
   },
   {

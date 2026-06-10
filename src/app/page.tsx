@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CirclePlus, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, CirclePlus, ShieldCheck } from "lucide-react";
 import { ConfigNotice } from "@/components/ConfigNotice";
 import { ListingCard } from "@/components/ListingCard";
 import { getListings } from "@/lib/data";
@@ -18,10 +18,6 @@ export default async function HomePage() {
       >
         <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-16 sm:px-5 md:px-6 md:pb-24">
           <div className="max-w-3xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold backdrop-blur">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-              BikeTrh MVP
-            </p>
             <h1 className="text-3xl font-black leading-tight tracking-normal sm:text-4xl md:text-6xl">
               Jednodušší nákup a prodej cyklo vybavení z druhé ruky
             </h1>
@@ -51,17 +47,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-5 md:px-6 md:py-12">
         <ConfigNotice />
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-moss">Nejnovější nabídky</p>
-            <h2 className="mt-1 text-xl font-bold text-ink sm:text-2xl">Vybavení, které právě hledá nového majitele</h2>
-          </div>
-          <Link href="/inzeraty" className="hidden text-sm font-semibold text-moss hover:text-ink sm:inline-flex">
-            Zobrazit vše
-          </Link>
-        </div>
-
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
