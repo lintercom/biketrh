@@ -31,14 +31,14 @@ export default async function ListingsPage({ searchParams }: PageProps) {
     : categoryLabel;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-5 md:px-8 md:py-12">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-moss">
+          <p className="text-base font-semibold uppercase tracking-wide text-moss">
             {activeFilterLabel ? "Kategorie" : "BikeTrh"}
           </p>
-          <h1 className="mt-1 break-words text-2xl font-black text-ink sm:text-3xl">{title}</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-600">
+          <h1 className="mt-1 break-words text-3xl font-black text-ink sm:text-4xl">{title}</h1>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-zinc-600">
             {query
               ? "Hledáme v názvech, popisech, rozměrech, lokalitách, kategoriích a dalších údajích aktivních inzerátů."
               : activeFilterLabel
@@ -46,8 +46,8 @@ export default async function ListingsPage({ searchParams }: PageProps) {
                 : "Nejnovější nabídky cyklo vybavení od lidí z bike komunity."}
           </p>
         </div>
-        <div className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-semibold text-zinc-700">
-          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+        <div className="inline-flex min-h-12 w-fit items-center gap-2 rounded-lg border border-line bg-white px-4 py-3 text-base font-semibold text-zinc-700">
+          <SlidersHorizontal className="h-5 w-5" aria-hidden="true" />
           Nejnovější první
         </div>
       </div>
@@ -57,7 +57,7 @@ export default async function ListingsPage({ searchParams }: PageProps) {
       </div>
 
       {listings.length > 0 ? (
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}

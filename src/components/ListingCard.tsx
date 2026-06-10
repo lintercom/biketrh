@@ -21,38 +21,38 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
           {mainImage ? (
             <img src={mainImage} alt={listing.title} className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full items-center justify-center px-6 text-center text-sm text-zinc-500">
+            <div className="flex h-full items-center justify-center px-6 text-center text-base text-zinc-500">
               Fotografie bude doplněna
             </div>
           )}
         </div>
       </Link>
 
-      <div className="space-y-3 p-3 sm:p-4">
+      <div className="space-y-4 p-4 sm:p-5">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0">
-            <Link href={`/inzeraty/${listing.id}`} className="line-clamp-2 font-semibold leading-5 text-ink hover:text-moss">
+            <Link href={`/inzeraty/${listing.id}`} className="line-clamp-2 text-base font-semibold leading-6 text-ink hover:text-moss sm:text-lg">
               {listing.title}
             </Link>
-            <p className="mt-1 text-lg font-bold text-ink">{formatPrice(listing.price)}</p>
+            <p className="mt-2 text-xl font-black text-ink">{formatPrice(listing.price)}</p>
           </div>
           {showStatus ? (
-            <span className="shrink-0 rounded-full bg-fog px-2 py-1 text-xs font-semibold text-zinc-700">
+            <span className="shrink-0 rounded-full bg-fog px-2.5 py-1.5 text-sm font-semibold text-zinc-700">
               {listing.status === "active" ? "Aktivní" : listing.status === "reserved" ? "Rezervováno" : listing.status === "sold" ? "Prodáno" : "Skryto"}
             </span>
           ) : null}
         </div>
 
-        <div className="flex min-w-0 items-center gap-1.5 text-sm text-zinc-600">
-          <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <div className="flex min-w-0 items-center gap-2 text-base text-zinc-600">
+          <MapPin className="h-5 w-5 shrink-0" aria-hidden="true" />
           <span className="min-w-0 truncate">{listing.location}</span>
         </div>
 
-        <Link href={`/uzivatel/${listing.seller.id}`} className="flex min-w-0 items-center gap-2 text-sm">
+        <Link href={`/uzivatel/${listing.seller.id}`} className="flex min-w-0 items-center gap-2.5 text-base">
           <Avatar profile={listing.seller} size="sm" />
           <span className="min-w-0 flex-1 truncate text-zinc-700">{listing.seller.display_name}</span>
           <span className="inline-flex shrink-0 items-center gap-1 text-zinc-600">
-            <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
+            <Star className="h-5 w-5 fill-amber-400 text-amber-400" aria-hidden="true" />
             {formatRating(listing.seller)}
           </span>
         </Link>

@@ -62,7 +62,7 @@ function isBottomActive(pathname: string, matches: string[]) {
 
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
-    <Link href="/" className={clsx("shrink-0 font-black italic leading-none text-black", compact ? "text-[30px]" : "text-[42px]")}>
+    <Link href="/" className={clsx("shrink-0 font-black italic leading-none text-black", compact ? "text-[30px]" : "text-[36px]")}>
       Bike<span className="text-moss">Trh</span>
     </Link>
   );
@@ -72,17 +72,18 @@ export function Navigation({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
   const [searchTarget, setSearchTarget] = useState<"listings" | "users">("listings");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDesktopCategory, setActiveDesktopCategory] = useState<string | null>(null);
   const searchAction = searchTarget === "users" ? "/uzivatele" : "/inzeraty";
   const searchPlaceholder = searchTarget === "users" ? "Hledat uživatele" : "Hledat vybavení";
 
   return (
     <>
       <header className="sticky top-0 z-40 hidden border-b border-line bg-white/95 backdrop-blur md:block">
-        <div className="mx-auto flex h-24 max-w-[1800px] items-center gap-5 px-8">
+        <div className="mx-auto flex h-20 max-w-[1800px] items-center gap-4 px-8">
           <Logo />
 
           <div className="flex min-w-[520px] flex-1 items-center overflow-hidden rounded-lg border border-zinc-300 bg-white shadow-[0_2px_8px_rgba(23,32,27,0.04)]">
-            <div className="relative h-14 shrink-0 border-r border-zinc-300">
+            <div className="relative h-12 shrink-0 border-r border-zinc-300">
               <label htmlFor="search-target" className="sr-only">
                 Co hledat
               </label>
@@ -90,15 +91,15 @@ export function Navigation({ profile }: { profile: Profile | null }) {
                 id="search-target"
                 value={searchTarget}
                 onChange={(event) => setSearchTarget(event.target.value === "users" ? "users" : "listings")}
-                className="h-14 w-56 cursor-pointer appearance-none border-0 bg-white px-7 pr-12 text-lg font-semibold text-ink shadow-none focus:border-0 focus:shadow-none"
+                className="h-12 w-52 cursor-pointer appearance-none border-0 bg-white px-6 pr-11 text-base font-semibold text-ink shadow-none focus:border-0 focus:shadow-none"
               >
                 <option value="listings">Inzeráty</option>
                 <option value="users">Uživatelé</option>
               </select>
-              <ChevronDown className="pointer-events-none absolute right-6 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500" aria-hidden="true" />
+              <ChevronDown className="pointer-events-none absolute right-5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" aria-hidden="true" />
             </div>
-            <form action={searchAction} className="flex h-14 min-w-0 flex-1 items-center gap-4 px-6">
-              <Search className="h-6 w-6 shrink-0 text-zinc-500" aria-hidden="true" />
+            <form action={searchAction} className="flex h-12 min-w-0 flex-1 items-center gap-3 px-5">
+              <Search className="h-5 w-5 shrink-0 text-zinc-500" aria-hidden="true" />
               <label htmlFor="site-search" className="sr-only">
                 {searchPlaceholder}
               </label>
@@ -107,7 +108,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
                 name="q"
                 type="search"
                 placeholder={searchPlaceholder}
-                className="h-full min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-lg text-ink shadow-none placeholder:text-zinc-500 focus:border-0 focus:shadow-none"
+                className="h-full min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-base text-ink shadow-none placeholder:text-zinc-500 focus:border-0 focus:shadow-none"
               />
             </form>
           </div>
@@ -116,12 +117,12 @@ export function Navigation({ profile }: { profile: Profile | null }) {
             {profile ? (
               <Link
                 href="/profil"
-                className="inline-flex min-h-14 items-center justify-center rounded-lg border border-moss bg-white px-5 text-lg font-semibold text-moss hover:bg-moss/10"
+                className="inline-flex min-h-12 items-center justify-center rounded-lg border border-moss bg-white px-5 text-base font-semibold text-moss hover:bg-moss/10"
               >
                 {profile.display_name}
               </Link>
             ) : (
-              <div className="inline-flex min-h-14 items-center rounded-lg border border-moss bg-white px-5 text-lg font-semibold text-moss">
+              <div className="inline-flex min-h-12 items-center rounded-lg border border-moss bg-white px-5 text-base font-semibold text-moss">
                 <Link href="/prihlaseni" className="hover:text-ink">
                   Přihlásit se
                 </Link>
@@ -134,45 +135,49 @@ export function Navigation({ profile }: { profile: Profile | null }) {
 
             <Link
               href="/pridat-inzerat"
-              className="inline-flex min-h-14 items-center justify-center rounded-lg bg-moss px-5 text-lg font-bold text-white shadow-[0_4px_12px_rgba(230,175,0,0.28)] hover:bg-[#c99700]"
+              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-moss px-5 text-base font-bold text-white shadow-[0_4px_12px_rgba(230,175,0,0.28)] hover:bg-[#c99700]"
             >
               Přidat inzerát
             </Link>
           </div>
         </div>
 
-        <div className="relative border-t border-line">
-          <div className="mx-auto flex h-16 max-w-[1800px] items-center gap-2 px-8">
+        <div className="relative border-t border-line" onMouseLeave={() => setActiveDesktopCategory(null)}>
+          <div className="mx-auto flex h-14 max-w-[1800px] items-center gap-2 px-8">
             {catalogCategories.map((category) => {
               const Icon = categoryIcons[category.icon];
+              const active = activeDesktopCategory === category.label;
 
               return (
-                <div key={category.label} className="group h-16">
+                <div key={category.label} className="h-14" onMouseEnter={() => setActiveDesktopCategory(category.label)}>
                   <Link
                     href={categoryHref(category.label)}
-                    className="relative inline-flex h-16 shrink-0 items-center gap-2 px-4 text-lg font-semibold text-ink hover:text-moss"
+                    className={clsx("relative inline-flex h-14 shrink-0 items-center gap-2 px-4 text-base font-semibold hover:text-moss", active ? "text-moss" : "text-ink")}
                   >
                     <Icon className="h-5 w-5" aria-hidden="true" />
                     {category.label}
                     <ChevronDown className="h-4 w-4 text-zinc-500" aria-hidden="true" />
-                    <span className="absolute inset-x-4 bottom-0 hidden h-0.5 bg-moss group-hover:block" />
+                    {active ? <span className="absolute inset-x-4 bottom-0 h-0.5 bg-moss" /> : null}
                   </Link>
 
-                  <div className="invisible absolute left-0 right-0 top-16 z-50 border-t border-line bg-white opacity-0 shadow-[0_18px_30px_rgba(23,32,27,0.12)] transition group-hover:visible group-hover:opacity-100">
-                    <div className="mx-auto max-w-[1800px] px-8 py-6">
-                      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {category.subcategories.map((subcategory) => (
-                          <Link
-                            key={subcategory.label}
-                            href={categoryHref(category.label, subcategory.label)}
-                            className="rounded-lg px-4 py-3 text-base font-semibold text-ink hover:bg-fog hover:text-moss"
-                          >
-                            {subcategory.label}
-                          </Link>
-                        ))}
+                  {active ? (
+                    <div className="absolute left-0 right-0 top-14 z-50 border-t border-line bg-white shadow-[0_18px_30px_rgba(23,32,27,0.12)]">
+                      <div className="mx-auto max-w-[1800px] px-8 py-6">
+                        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                          {category.subcategories.map((subcategory) => (
+                            <Link
+                              key={subcategory.label}
+                              href={categoryHref(category.label, subcategory.label)}
+                              onClick={() => setActiveDesktopCategory(null)}
+                              className="rounded-lg px-4 py-3 text-base font-semibold text-ink hover:bg-fog hover:text-moss"
+                            >
+                              {subcategory.label}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ) : null}
                 </div>
               );
             })}
