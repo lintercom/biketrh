@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Flag, Heart, MapPin, MessageCircle, MoreVertical, ShieldCheck, Star } from "lucide-react";
+import { Flag, MapPin, MessageCircle, MoreVertical, ShieldCheck, Star } from "lucide-react";
 import { clsx } from "clsx";
 import { Avatar } from "@/components/Avatar";
+import { ListingGallery } from "@/components/ListingGallery";
 import { SubmitButton } from "@/components/SubmitButton";
 import { startOrderAction } from "@/app/actions";
 import { conditionLabels, formatDate, formatPrice, formatRating } from "@/lib/format";
@@ -27,8 +27,6 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
   const isOwner = user?.id === listing.seller_id;
   const canOrder = listing.status === "active" && !isOwner;
   const images = listing.images.length > 0 ? listing.images : [];
-  const mainImage = images[0]?.image_url;
-  const secondaryImages = images.slice(1, 3);
   const breadcrumbItems = [listing.category, listing.subcategory, listing.seller.display_name];
 
   return (
@@ -37,33 +35,7 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
         <div className="min-w-0">
-          <section className="grid gap-1 overflow-hidden rounded-lg md:grid-cols-2">
-            <div className="relative min-h-[320px] bg-white md:min-h-[620px]">
-              {mainImage ? (
-                <Image src={mainImage} alt={listing.title} fill priority sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
-              ) : (
-                <div className="flex h-full min-h-[320px] items-center justify-center bg-fog text-sm text-zinc-500">Bez fotografie</div>
-              )}
-            </div>
-
-            <div className="grid gap-1">
-              {(secondaryImages.length > 0 ? secondaryImages : [images[0], images[0]].filter(Boolean)).slice(0, 2).map((image, index) => (
-                <div key={image?.id ? `${image.id}-${index}` : `image-${index}`} className="relative min-h-[230px] bg-white md:min-h-0">
-                  {image?.image_url ? (
-                    <Image src={image.image_url} alt={listing.title} fill sizes="(min-width: 1024px) 28vw, 100vw" className="object-cover" />
-                  ) : (
-                    <div className="flex h-full items-center justify-center bg-fog text-sm text-zinc-500">Bez fotografie</div>
-                  )}
-                  {index === 1 ? (
-                    <div className="absolute bottom-4 right-4 inline-flex h-11 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold text-ink shadow-soft">
-                      <Heart className="h-5 w-5" aria-hidden="true" />
-                      {listing.seller.rating_count || ""}
-                    </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </section>
+          <ListingGallery images={images} title={listing.title} />
 
           <nav className="mt-4 flex flex-wrap items-center gap-2 text-[15px] text-zinc-600" aria-label="Drobečková navigace">
             {breadcrumbItems.map((item, index) => (

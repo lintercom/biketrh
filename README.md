@@ -69,7 +69,7 @@ MVP používá tabulky:
 - `messages`
 - `reviews`
 
-Kategorie je v MVP automaticky `Komponenty`. Sloupec `category` zůstává textový, takže další kategorie lze přidat bez změny databázového modelu.
+Inzeráty používají dvojici `category` + `subcategory`. Aktuální hlavní kategorie jsou `Komponenty`, `Doplňky a příslušenství` a `Oblečení a obuv`.
 
 ## Hlavní stránky
 

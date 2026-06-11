@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
-import { Camera, CirclePlus } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { CategoryFields } from "@/components/CategoryFields";
 import { ConfigNotice } from "@/components/ConfigNotice";
+import { PhotoUploadRows } from "@/components/PhotoUploadRows";
 import { SubmitButton } from "@/components/SubmitButton";
 import { createListingAction } from "@/app/actions";
 import { conditionLabels } from "@/lib/format";
@@ -33,7 +34,6 @@ export default async function AddListingPage({ searchParams }: PageProps) {
 
       <form
         action={createListingAction}
-        encType="multipart/form-data"
         className="mt-5 space-y-5 rounded-lg border border-line bg-white p-4 shadow-soft sm:p-5"
       >
         <div>
@@ -82,19 +82,8 @@ export default async function AddListingPage({ searchParams }: PageProps) {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-ink" htmlFor="photos">
-            Fotografie
-          </label>
-          <div className="mt-2 rounded-lg border border-dashed border-line bg-fog p-4">
-            <label htmlFor="photos" className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-ink">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-moss">
-                <Camera className="h-5 w-5" aria-hidden="true" />
-              </span>
-              Vybrat fotografie z galerie
-            </label>
-            <input id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple className="mt-3 text-sm" />
-            <p className="mt-2 text-xs text-zinc-500">Nahrajte až 8 fotek, první bude hlavní.</p>
-          </div>
+          <label className="text-sm font-semibold text-ink">Fotografie</label>
+          <PhotoUploadRows label="Vybrat fotografie z galerie" />
         </div>
 
         <SubmitButton pendingText="Vkládám inzerát...">

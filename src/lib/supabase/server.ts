@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import type { CookieOptions } from "@supabase/ssr";
 
 function getSupabasePublishableKey() {
@@ -17,15 +16,6 @@ export async function createSupabaseServerClient() {
 
   if (!supabaseUrl || !supabasePublishableKey) {
     return null;
-  }
-
-  if (process.env.GITHUB_PAGES === "true") {
-    return createClient(supabaseUrl, supabasePublishableKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
   }
 
   const cookieStore = await cookies();

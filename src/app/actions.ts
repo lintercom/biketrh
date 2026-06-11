@@ -9,6 +9,7 @@ import type { ListingCondition, ListingStatus, OrderStatus } from "@/lib/types";
 const listingConditions: ListingCondition[] = ["new", "like_new", "good", "used", "for_parts"];
 const listingStatuses: ListingStatus[] = ["active", "reserved", "sold", "hidden"];
 const orderStatuses: OrderStatus[] = ["created", "accepted", "cancelled", "completed"];
+const maxListingPhotos = 6;
 
 function textField(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -26,6 +27,11 @@ function safeRedirectPath(value: string, fallback = "/") {
 function withError(path: string, message: string): never {
   const separator = path.includes("?") ? "&" : "?";
   redirect(`${path}${separator}chyba=${encodeURIComponent(message)}`);
+}
+
+function withMessage(path: string, message: string): never {
+  const separator = path.includes("?") ? "&" : "?";
+  redirect(`${path}${separator}zprava=${encodeURIComponent(message)}`);
 }
 
 async function requireSupabase(path: string) {
@@ -98,7 +104,7 @@ export async function updateProfileAction(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/profil?zprava=Profil je uložený.");
+  withMessage("/profil", "Profil je uložený.");
 }
 
 function normalizeFileName(name: string) {
@@ -109,6 +115,23 @@ function normalizeFileName(name: string) {
     .replace(/^-+|-+$/g, "")
     .toLowerCase()
     .slice(0, 80);
+}
+
+function storagePathFromPublicUrl(url: string) {
+  const marker = "/listing-images/";
+  const markerIndex = url.indexOf(marker);
+
+  if (markerIndex === -1) {
+    return null;
+  }
+
+  const path = url.slice(markerIndex + marker.length).split("?")[0];
+
+  try {
+    return decodeURIComponent(path);
+  } catch {
+    return path;
+  }
 }
 
 export async function createListingAction(formData: FormData) {
@@ -152,7 +175,7 @@ export async function createListingAction(formData: FormData) {
   const photos = formData
     .getAll("photos")
     .filter((value): value is File => value instanceof File && value.size > 0)
-    .slice(0, 8);
+    .slice(0, maxListingPhotos);
 
   const imageRows = [];
 
@@ -241,10 +264,98 @@ export async function updateListingAction(formData: FormData) {
     withError(path, "Inzerát se nepovedlo uložit.");
   }
 
+  const { data: existingImages } = await supabase
+    .from("listing_images")
+    .select("id, image_url, sort_order")
+    .eq("listing_id", listingId)
+    .order("sort_order", { ascending: true });
+
+  const images = (existingImages ?? []) as { id: string; image_url: string; sort_order: number }[];
+  const imagesById = new Map(images.map((image) => [image.id, image]));
+  const deleteIds = new Set(
+    formData
+      .getAll("delete_image_id")
+      .filter((value): value is string => typeof value === "string" && imagesById.has(value))
+  );
+  const keptImages = images.filter((image) => !deleteIds.has(image.id)).slice(0, maxListingPhotos);
+  const overflowImages = images.filter((image) => !deleteIds.has(image.id)).slice(maxListingPhotos);
+  const removedImages = [...deleteIds]
+    .map((id) => imagesById.get(id))
+    .filter((image): image is { id: string; image_url: string; sort_order: number } => Boolean(image));
+
+  if (deleteIds.size > 0 || overflowImages.length > 0) {
+    await supabase
+      .from("listing_images")
+      .delete()
+      .eq("listing_id", listingId)
+      .in("id", [...removedImages, ...overflowImages].map((image) => image.id));
+
+    const storagePaths = [...removedImages, ...overflowImages]
+      .map((image) => image.image_url)
+      .map(storagePathFromPublicUrl)
+      .filter((storagePath): storagePath is string => Boolean(storagePath));
+
+    if (storagePaths.length > 0) {
+      await supabase.storage.from("listing-images").remove(storagePaths);
+    }
+  }
+
+  for (const [index, image] of keptImages.entries()) {
+    await supabase
+      .from("listing_images")
+      .update({ sort_order: 10000 + index })
+      .eq("listing_id", listingId)
+      .eq("id", image.id);
+  }
+
+  const newPhotos = formData
+    .getAll("photos")
+    .filter((value): value is File => value instanceof File && value.size > 0)
+    .slice(0, Math.max(0, maxListingPhotos - keptImages.length));
+
+  const newImageRows = [];
+
+  for (const [index, photo] of newPhotos.entries()) {
+    const fileName = normalizeFileName(photo.name) || `foto-${index + 1}.jpg`;
+    const imageIndex = keptImages.length + index;
+    const uploadPath = `${user.id}/${listingId}/${crypto.randomUUID()}-${fileName}`;
+    const { error: uploadError } = await supabase.storage
+      .from("listing-images")
+      .upload(uploadPath, photo, {
+        contentType: photo.type || "image/jpeg"
+      });
+
+    if (uploadError) {
+      continue;
+    }
+
+    const {
+      data: { publicUrl }
+    } = supabase.storage.from("listing-images").getPublicUrl(uploadPath);
+
+    newImageRows.push({
+      listing_id: listingId,
+      image_url: publicUrl,
+      sort_order: imageIndex
+    });
+  }
+
+  if (newImageRows.length > 0) {
+    await supabase.from("listing_images").insert(newImageRows);
+  }
+
+  for (const [index, image] of keptImages.entries()) {
+    await supabase
+      .from("listing_images")
+      .update({ sort_order: index })
+      .eq("listing_id", listingId)
+      .eq("id", image.id);
+  }
+
   revalidatePath("/moje-inzeraty");
   revalidatePath("/inzeraty");
   revalidatePath(`/inzeraty/${listingId}`);
-  redirect("/moje-inzeraty?zprava=Inzerát je uložený.");
+  withMessage("/moje-inzeraty", "Inzerát je uložený.");
 }
 
 export async function startOrderAction(formData: FormData) {
@@ -363,5 +474,5 @@ export async function createReviewAction(formData: FormData) {
 
   revalidatePath(`/objednavky/${orderId}`);
   revalidatePath(`/uzivatel/${reviewedUserId}`);
-  redirect(`/objednavky/${orderId}?zprava=Hodnocení je uložené.`);
+  withMessage(`/objednavky/${orderId}`, "Hodnocení je uložené.");
 }
