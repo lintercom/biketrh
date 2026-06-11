@@ -5,7 +5,7 @@ import { ListingCard } from "@/components/ListingCard";
 import { getListings } from "@/lib/data";
 
 export default async function HomePage() {
-  const listings = (await getListings()).slice(0, 4);
+  const listings = (await getListings()).slice(0, 5);
 
   return (
     <div>
@@ -16,7 +16,7 @@ export default async function HomePage() {
             "linear-gradient(180deg, rgba(23,32,27,0.22), rgba(23,32,27,0.74)), url('https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1800&q=90')"
         }}
       >
-        <div className="mx-auto w-full max-w-7xl px-4 pb-14 pt-16 sm:px-5 md:px-8 md:pb-28">
+        <div className="mx-auto w-full max-w-[1800px] px-4 pb-14 pt-16 sm:px-5 md:px-8 md:pb-28">
           <div className="max-w-3xl">
             <h1 className="text-4xl font-black leading-[1.05] tracking-normal sm:text-5xl md:text-7xl">
               Jednodušší nákup a prodej cyklo vybavení z druhé ruky
@@ -27,16 +27,16 @@ export default async function HomePage() {
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/inzeraty"
-                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-lg bg-white px-6 py-4 text-base font-bold text-ink hover:bg-fog"
+                className="inline-flex min-h-16 min-w-[210px] items-center justify-center gap-3 rounded-lg bg-white px-8 py-5 text-lg font-bold text-ink hover:bg-fog"
               >
                 Prohlížet inzeráty
-                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                <ArrowRight className="h-6 w-6" aria-hidden="true" />
               </Link>
               <Link
                 href="/pridat-inzerat"
-                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-lg bg-leaf px-6 py-4 text-base font-bold text-white hover:bg-moss"
+                className="inline-flex min-h-16 min-w-[210px] items-center justify-center gap-3 rounded-lg bg-leaf px-8 py-5 text-lg font-bold text-white hover:bg-moss"
               >
-                <CirclePlus className="h-5 w-5" aria-hidden="true" />
+                <CirclePlus className="h-6 w-6" aria-hidden="true" />
                 Přidat inzerát
               </Link>
             </div>
@@ -44,10 +44,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 md:px-8 md:py-14">
+      <section className="mx-auto max-w-[1800px] px-4 py-10 sm:px-5 md:px-8 md:py-14">
         <ConfigNotice />
 
-        <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">
           {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
@@ -55,7 +55,7 @@ export default async function HomePage() {
       </section>
 
       <section className="border-y border-line bg-white">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:px-5 md:grid-cols-3 md:px-8 md:py-12">
+        <div className="mx-auto grid max-w-[1800px] gap-6 px-4 py-10 sm:px-5 md:grid-cols-3 md:px-8 md:py-12">
           {[
             ["Rychlé vložení", "Název, stav, lokalita, fotky a hotovo."],
             ["Důvěra v profilu", "Hodnocení a aktivní nabídky jsou vidět bez složitého hledání."],

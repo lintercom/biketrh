@@ -23,10 +23,10 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
   const listings = await getUserListings(user.id);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
-      <p className="text-sm font-semibold uppercase tracking-wide text-moss">Prodej</p>
+    <div className="mx-auto max-w-[1800px] px-4 py-5 sm:px-5 md:px-8 md:py-10">
+      <p className="text-base font-semibold uppercase tracking-wide text-moss">Prodej</p>
       <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Moje inzeráty</h1>
-      <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-600">
+      <p className="mt-2 max-w-2xl text-base leading-7 text-zinc-600">
         Spravujte aktivní nabídky, skryté inzeráty i položky, které už jsou prodané.
       </p>
 
@@ -34,7 +34,7 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
       {zprava ? <div className="mt-5 rounded-lg border border-line bg-white p-4 text-sm text-zinc-700">{zprava}</div> : null}
 
       {listings.length > 0 ? (
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {listings.map((listing) => (
             <ListingCard
               key={listing.id}

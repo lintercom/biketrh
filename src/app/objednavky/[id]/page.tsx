@@ -125,7 +125,7 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
                 <OrderAction orderId={order.id} status="cancelled" label="Zrušit" icon={<XCircle className="h-4 w-4" />} />
               ) : null}
               <Link
-                href={`/zpravy/${order.listing_id}`}
+                href={`/zpravy/${order.listing_id}?with=${otherProfile.id}`}
                 className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-semibold text-ink hover:bg-fog"
               >
                 <MessageCircle className="h-4 w-4" aria-hidden="true" />

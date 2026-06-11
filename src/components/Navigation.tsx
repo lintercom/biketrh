@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import {
+  Bell,
   ChevronDown,
   CirclePlus,
   Grid2X2,
+  Heart,
   Home,
   LogOut,
+  Mail,
   Menu,
   MessageCircle,
   Search,
@@ -18,6 +22,7 @@ import {
   X
 } from "lucide-react";
 import { clsx } from "clsx";
+import { Avatar } from "@/components/Avatar";
 import { signOutAction } from "@/app/actions";
 import { catalogCategories, categoryHref, type CatalogIconName } from "@/lib/catalog";
 import type { Profile } from "@/lib/types";
@@ -38,7 +43,7 @@ const bottomNavItems = [
   { href: "/", label: "Domů", icon: Home, match: ["/"] },
   { href: "/inzeraty", label: "Procházet", icon: Search, match: ["/inzeraty", "/uzivatel", "/uzivatele"] },
   { href: "/pridat-inzerat", label: "Prodávat", icon: CirclePlus, match: ["/pridat-inzerat"] },
-  { href: "/moje-objednavky", label: "Zprávy", icon: MessageCircle, match: ["/moje-objednavky", "/objednavky", "/zpravy"] },
+  { href: "/zpravy", label: "Zprávy", icon: MessageCircle, match: ["/zpravy"] },
   { href: "/profil", label: "Profil", icon: User, match: ["/profil", "/prihlaseni", "/registrace"] }
 ];
 
@@ -68,13 +73,42 @@ function Logo({ compact = false }: { compact?: boolean }) {
   );
 }
 
-export function Navigation({ profile }: { profile: Profile | null }) {
+export function Navigation({ profile, unreadMessages = 0 }: { profile: Profile | null; unreadMessages?: number }) {
   const pathname = usePathname();
   const [searchTarget, setSearchTarget] = useState<"listings" | "users">("listings");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [activeDesktopCategory, setActiveDesktopCategory] = useState<string | null>(null);
+  const desktopCategoryRef = useRef<HTMLDivElement>(null);
+  const mobileHeaderRef = useRef<HTMLElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
   const searchAction = searchTarget === "users" ? "/uzivatele" : "/inzeraty";
   const searchPlaceholder = searchTarget === "users" ? "Hledat uživatele" : "Hledat vybavení";
+
+  useEffect(() => {
+    function closeOpenMenus(event: PointerEvent) {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      if (profileMenuOpen && !profileMenuRef.current?.contains(target)) {
+        setProfileMenuOpen(false);
+      }
+
+      if (activeDesktopCategory && !desktopCategoryRef.current?.contains(target)) {
+        setActiveDesktopCategory(null);
+      }
+
+      if (mobileMenuOpen && !mobileHeaderRef.current?.contains(target)) {
+        setMobileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", closeOpenMenus);
+    return () => document.removeEventListener("pointerdown", closeOpenMenus);
+  }, [activeDesktopCategory, mobileMenuOpen, profileMenuOpen]);
 
   return (
     <>
@@ -115,12 +149,53 @@ export function Navigation({ profile }: { profile: Profile | null }) {
 
           <div className="flex shrink-0 items-center gap-3">
             {profile ? (
-              <Link
-                href="/profil"
-                className="inline-flex min-h-12 items-center justify-center rounded-lg border border-moss bg-white px-5 text-base font-semibold text-moss hover:bg-moss/10"
-              >
-                {profile.display_name}
-              </Link>
+              <div className="flex items-center gap-2">
+                <DesktopIconLink href="/zpravy" label="Zprávy" badge={unreadMessages}>
+                  <Mail className="h-6 w-6" aria-hidden="true" />
+                </DesktopIconLink>
+                <DesktopIconLink href="/moje-objednavky" label="Notifikace">
+                  <Bell className="h-6 w-6" aria-hidden="true" />
+                </DesktopIconLink>
+                <DesktopIconLink href="/moje-inzeraty" label="Oblíbené">
+                  <Heart className="h-6 w-6" aria-hidden="true" />
+                </DesktopIconLink>
+                <div ref={profileMenuRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setProfileMenuOpen((open) => !open)}
+                    className="inline-flex h-12 items-center gap-2 rounded-lg px-2 hover:bg-fog"
+                    aria-expanded={profileMenuOpen}
+                    aria-haspopup="menu"
+                    aria-label="Otevřít profilové menu"
+                  >
+                    <Avatar profile={profile} size="sm" />
+                    <ChevronDown className="h-4 w-4 text-zinc-500" aria-hidden="true" />
+                  </button>
+
+                  {profileMenuOpen ? (
+                    <div className="absolute right-0 top-14 z-50 w-64 overflow-hidden rounded-lg border border-line bg-white py-2 shadow-[0_18px_30px_rgba(23,32,27,0.16)]" role="menu">
+                      <ProfileMenuLink href="/profil" onClick={() => setProfileMenuOpen(false)}>
+                        Nastavení profilu
+                      </ProfileMenuLink>
+                      <ProfileMenuLink href="/moje-inzeraty" onClick={() => setProfileMenuOpen(false)}>
+                        Moje inzeráty
+                      </ProfileMenuLink>
+                      <ProfileMenuLink href="/moje-objednavky" onClick={() => setProfileMenuOpen(false)}>
+                        Moje objednávky
+                      </ProfileMenuLink>
+                      <form action={signOutAction} className="border-t border-line pt-2">
+                        <button
+                          type="submit"
+                          className="block w-full px-4 py-2.5 text-left text-base font-medium text-zinc-600 hover:bg-fog hover:text-ink"
+                          role="menuitem"
+                        >
+                          Odhlásit
+                        </button>
+                      </form>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             ) : (
               <div className="inline-flex min-h-12 items-center rounded-lg border border-moss bg-white px-5 text-base font-semibold text-moss">
                 <Link href="/prihlaseni" className="hover:text-ink">
@@ -142,7 +217,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
           </div>
         </div>
 
-        <div className="relative border-t border-line" onMouseLeave={() => setActiveDesktopCategory(null)}>
+        <div ref={desktopCategoryRef} className="relative border-t border-line" onMouseLeave={() => setActiveDesktopCategory(null)}>
           <div className="mx-auto flex h-14 max-w-[1800px] items-center gap-2 px-8">
             {catalogCategories.map((category) => {
               const Icon = categoryIcons[category.icon];
@@ -185,7 +260,7 @@ export function Navigation({ profile }: { profile: Profile | null }) {
         </div>
       </header>
 
-      <header className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur md:hidden">
+      <header ref={mobileHeaderRef} className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur md:hidden">
         <div className="mobile-safe-top flex min-h-14 items-center justify-between gap-3 px-4">
           <Logo compact />
           <button
@@ -321,5 +396,26 @@ export function Navigation({ profile }: { profile: Profile | null }) {
         </div>
       </nav>
     </>
+  );
+}
+
+function DesktopIconLink({ href, label, badge, children }: { href: string; label: string; badge?: number; children: ReactNode }) {
+  return (
+    <Link href={href} className="relative inline-flex h-12 w-12 items-center justify-center rounded-lg text-zinc-700 hover:bg-fog hover:text-ink" aria-label={label}>
+      {children}
+      {badge ? (
+        <span className="absolute right-1.5 top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold leading-none text-white">
+          {badge > 9 ? "9+" : badge}
+        </span>
+      ) : null}
+    </Link>
+  );
+}
+
+function ProfileMenuLink({ href, onClick, children }: { href: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <Link href={href} onClick={onClick} className="block px-4 py-2.5 text-base font-medium text-zinc-600 hover:bg-fog hover:text-ink" role="menuitem">
+      {children}
+    </Link>
   );
 }

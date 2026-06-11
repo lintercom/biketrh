@@ -22,20 +22,20 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
           {mainImage ? (
             <Image src={mainImage} alt={listing.title} fill sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
           ) : (
-            <div className="flex h-full items-center justify-center px-6 text-center text-base text-zinc-500">
+          <div className="flex h-full items-center justify-center px-6 text-center text-lg text-zinc-500">
               Fotografie bude doplněna
             </div>
           )}
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
+      <div className="flex flex-1 flex-col p-4 sm:p-5 md:p-6">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <Link href={`/inzeraty/${listing.id}`} className="line-clamp-2 min-h-12 text-base font-semibold leading-6 text-ink hover:text-moss sm:min-h-[3.5rem] sm:text-lg">
+            <Link href={`/inzeraty/${listing.id}`} className="line-clamp-2 min-h-12 text-lg font-semibold leading-6 text-ink hover:text-moss sm:min-h-[3.5rem] md:text-[19px] md:leading-7">
               {listing.title}
             </Link>
-            <p className="mt-2 text-xl font-black text-ink">{formatPrice(listing.price)}</p>
+            <p className="mt-2 text-2xl font-black text-ink">{formatPrice(listing.price)}</p>
           </div>
           {showStatus ? (
             <span className="shrink-0 rounded-full bg-fog px-2.5 py-1.5 text-sm font-semibold text-zinc-700">
@@ -44,12 +44,12 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
           ) : null}
         </div>
 
-        <div className="mt-4 flex min-w-0 items-center gap-2 text-base text-zinc-600">
+        <div className="mt-4 flex min-w-0 items-center gap-2 text-[17px] text-zinc-600">
           <MapPin className="h-5 w-5 shrink-0" aria-hidden="true" />
           <span className="min-w-0 truncate">{listing.location}</span>
         </div>
 
-        <Link href={`/uzivatel/${listing.seller.id}`} className="mt-auto flex min-w-0 items-center gap-2.5 pt-4 text-base">
+        <Link href={`/uzivatel/${listing.seller.id}`} className="mt-auto flex min-w-0 items-center gap-2.5 pt-4 text-[17px]">
           <Avatar profile={listing.seller} size="sm" />
           <span className="min-w-0 flex-1 truncate text-zinc-700">{listing.seller.display_name}</span>
           <span className="inline-flex shrink-0 items-center gap-1 text-zinc-600">

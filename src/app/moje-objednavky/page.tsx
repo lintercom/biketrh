@@ -20,8 +20,8 @@ export default async function MyOrdersPage() {
   const selling = orders.filter((order) => order.seller_id === user.id);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-5 sm:px-5 md:px-6 md:py-10">
-      <p className="text-sm font-semibold uppercase tracking-wide text-moss">Objednávky</p>
+    <div className="mx-auto max-w-[1800px] px-4 py-5 sm:px-5 md:px-8 md:py-10">
+      <p className="text-base font-semibold uppercase tracking-wide text-moss">Objednávky</p>
       <h1 className="mt-1 text-2xl font-black text-ink sm:text-3xl">Moje objednávky</h1>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">

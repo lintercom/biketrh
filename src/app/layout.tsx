@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Navigation } from "@/components/Navigation";
-import { getCurrentUserProfile } from "@/lib/data";
+import { getCurrentUserProfile, getUnreadMessageCount } from "@/lib/data";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,11 +11,12 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const { profile } = await getCurrentUserProfile();
+  const unreadMessages = profile ? await getUnreadMessageCount() : 0;
 
   return (
     <html lang="cs">
       <body>
-        <Navigation profile={profile} />
+        <Navigation profile={profile} unreadMessages={unreadMessages} />
         <main className="mobile-safe-bottom min-h-screen md:pt-0">{children}</main>
       </body>
     </html>

@@ -377,6 +377,57 @@ export async function startOrderAction(formData: FormData) {
   redirect(`/objednavky/${orderId}`);
 }
 
+export async function createPriceOfferAction(formData: FormData) {
+  const listingId = textField(formData, "listing_id");
+  const proposedPrice = Math.round(Number(textField(formData, "proposed_price").replace(/\s/g, "").replace(",", ".")));
+  const path = listingId ? `/inzeraty/${listingId}` : "/inzeraty";
+  const { supabase } = await requireUser(path);
+
+  if (!listingId || Number.isNaN(proposedPrice) || proposedPrice <= 0) {
+    withError(path, "Zadejte platnou nabídnutou cenu.");
+  }
+
+  const { error } = await supabase.rpc("create_price_offer", {
+    p_listing_id: listingId,
+    p_proposed_price: proposedPrice
+  });
+
+  if (error) {
+    withError(path, "Nabídku ceny se nepovedlo odeslat.");
+  }
+
+  revalidatePath(`/inzeraty/${listingId}`);
+  revalidatePath("/zpravy");
+  revalidatePath(`/zpravy/${listingId}`);
+  withMessage(`/zpravy/${listingId}`, "Nabídka ceny byla odeslána.");
+}
+
+export async function respondPriceOfferAction(formData: FormData) {
+  const listingId = textField(formData, "listing_id");
+  const receiverId = textField(formData, "receiver_id");
+  const offerId = textField(formData, "offer_id");
+  const status = textField(formData, "status");
+  const path = listingId ? `/zpravy/${listingId}${receiverId ? `?with=${encodeURIComponent(receiverId)}` : ""}` : "/moje-objednavky";
+  const { supabase } = await requireUser(path);
+
+  if (!offerId || !["accepted", "rejected"].includes(status)) {
+    withError(path, "Neplatná odpověď na nabídku ceny.");
+  }
+
+  const { error } = await supabase.rpc("respond_price_offer", {
+    p_offer_id: offerId,
+    p_status: status
+  });
+
+  if (error) {
+    withError(path, "Odpověď na nabídku ceny se nepovedlo uložit.");
+  }
+
+  revalidatePath("/zpravy");
+  revalidatePath(path);
+  redirect(path);
+}
+
 export async function updateListingStatusAction(formData: FormData) {
   const listingId = textField(formData, "listing_id");
   const status = textField(formData, "status") as ListingStatus;
@@ -428,10 +479,11 @@ export async function sendMessageAction(formData: FormData) {
   const listingId = textField(formData, "listing_id");
   const receiverId = textField(formData, "receiver_id");
   const text = textField(formData, "text");
-  const { supabase, user } = await requireUser(`/zpravy/${listingId}`);
+  const path = `/zpravy/${listingId}${receiverId ? `?with=${encodeURIComponent(receiverId)}` : ""}`;
+  const { supabase, user } = await requireUser(path);
 
   if (!text || !receiverId) {
-    withError(`/zpravy/${listingId}`, "Zpráva musí mít text a příjemce.");
+    withError(path, "Zpráva musí mít text a příjemce.");
   }
 
   const { error } = await supabase.from("messages").insert({
@@ -442,11 +494,12 @@ export async function sendMessageAction(formData: FormData) {
   });
 
   if (error) {
-    withError(`/zpravy/${listingId}`, "Zprávu se nepovedlo odeslat.");
+    withError(path, "Zprávu se nepovedlo odeslat.");
   }
 
-  revalidatePath(`/zpravy/${listingId}`);
-  redirect(`/zpravy/${listingId}`);
+  revalidatePath("/zpravy");
+  revalidatePath(path);
+  redirect(path);
 }
 
 export async function createReviewAction(formData: FormData) {

@@ -19,7 +19,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-[1800px] px-4 py-6 sm:px-5 md:px-8 md:py-10">
       <section className="rounded-lg border border-line bg-white p-5 shadow-soft">
         <div className="flex items-center gap-4">
           <Avatar profile={profile} size="lg" />
@@ -39,13 +39,13 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
       <div className="mt-8 flex items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-moss">Aktivní nabídky</p>
+          <p className="text-base font-semibold uppercase tracking-wide text-moss">Aktivní nabídky</p>
           <h2 className="mt-1 text-2xl font-bold text-ink">Inzeráty uživatele</h2>
         </div>
       </div>
 
       {listings.length > 0 ? (
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}

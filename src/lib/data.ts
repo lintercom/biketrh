@@ -6,8 +6,10 @@ import type {
   ListingImage,
   ListingWithDetails,
   Message,
+  MessageThread,
   Order,
   OrderWithDetails,
+  PriceOffer,
   Profile,
   Review
 } from "@/lib/types";
@@ -104,6 +106,28 @@ const orderSelect = `
   )
 `;
 
+const messageSelect = `
+  id,
+  listing_id,
+  sender_id,
+  receiver_id,
+  text,
+  price_offer_id,
+  is_read,
+  created_at,
+  price_offer:price_offers!messages_price_offer_id_fkey (
+    id,
+    listing_id,
+    buyer_id,
+    seller_id,
+    original_price,
+    proposed_price,
+    status,
+    created_at,
+    updated_at
+  )
+`;
+
 type RawListing = Record<string, unknown> & {
   listing_images?: ListingImage[] | null;
   seller?: Profile | Profile[] | null;
@@ -147,7 +171,16 @@ function single<T>(value: T | T[] | null | undefined): T | null {
   return value ?? null;
 }
 
-function filterDemoListings(search: string, categoryFilter: string, subcategoryFilter: string) {
+export type ListingSort = "newest" | "price_asc" | "price_desc";
+
+export type ListingFilters = {
+  sort?: ListingSort;
+  condition?: string;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+};
+
+function filterDemoListings(search: string, categoryFilter: string, subcategoryFilter: string, filters: ListingFilters = {}) {
   const lowerSearch = search.toLowerCase();
   const lowerCategory = categoryFilter.toLowerCase();
   const lowerSubcategory = subcategoryFilter.toLowerCase();
@@ -161,8 +194,21 @@ function filterDemoListings(search: string, categoryFilter: string, subcategoryF
         .includes(lowerSearch);
     const matchesCategory = !lowerCategory || listing.category.toLowerCase() === lowerCategory;
     const matchesSubcategory = !lowerSubcategory || listing.subcategory.toLowerCase() === lowerSubcategory;
+    const matchesCondition = !filters.condition || listing.condition === filters.condition;
+    const matchesMinPrice = filters.minPrice == null || listing.price >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice == null || listing.price <= filters.maxPrice;
 
-    return matchesSearch && matchesCategory && matchesSubcategory;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesCondition && matchesMinPrice && matchesMaxPrice;
+  }).sort((a, b) => {
+    if (filters.sort === "price_asc") {
+      return a.price - b.price;
+    }
+
+    if (filters.sort === "price_desc") {
+      return b.price - a.price;
+    }
+
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 }
 
@@ -259,21 +305,24 @@ export async function getCurrentUserProfile() {
   return { user, profile: (createdProfile as Profile | null) ?? null };
 }
 
-export async function getListings(query?: string, category?: string, subcategory?: string): Promise<ListingWithDetails[]> {
+export async function getListings(query?: string, category?: string, subcategory?: string, filters: ListingFilters = {}): Promise<ListingWithDetails[]> {
   const search = normalizeSearchTerm(query);
   const categoryFilter = normalizeFilterTerm(category);
   const subcategoryFilter = normalizeFilterTerm(subcategory);
+  const conditionFilter = filters.condition?.trim() ?? "";
+  const minPrice = filters.minPrice == null || Number.isNaN(filters.minPrice) ? null : filters.minPrice;
+  const maxPrice = filters.maxPrice == null || Number.isNaN(filters.maxPrice) ? null : filters.maxPrice;
+  const sort = filters.sort ?? "newest";
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
-    return filterDemoListings(search, categoryFilter, subcategoryFilter);
+    return filterDemoListings(search, categoryFilter, subcategoryFilter, { sort, condition: conditionFilter, minPrice, maxPrice });
   }
 
   let request = supabase
     .from("listings")
     .select(listingSelect)
-    .eq("status", "active")
-    .order("created_at", { ascending: false });
+    .eq("status", "active");
 
   if (categoryFilter) {
     request = request.eq("category", categoryFilter);
@@ -283,6 +332,18 @@ export async function getListings(query?: string, category?: string, subcategory
     request = request.eq("subcategory", subcategoryFilter);
   }
 
+  if (conditionFilter) {
+    request = request.eq("condition", conditionFilter);
+  }
+
+  if (minPrice != null) {
+    request = request.gte("price", minPrice);
+  }
+
+  if (maxPrice != null) {
+    request = request.lte("price", maxPrice);
+  }
+
   if (search) {
     const pattern = `%${search}%`;
     request = request.or(
@@ -290,8 +351,16 @@ export async function getListings(query?: string, category?: string, subcategory
     );
   }
 
+  if (sort === "price_asc") {
+    request = request.order("price", { ascending: true }).order("created_at", { ascending: false });
+  } else if (sort === "price_desc") {
+    request = request.order("price", { ascending: false }).order("created_at", { ascending: false });
+  } else {
+    request = request.order("created_at", { ascending: false });
+  }
+
   const { data, error } = await request;
-  const matchingDemoListings = filterDemoListings(search, categoryFilter, subcategoryFilter);
+  const matchingDemoListings = filterDemoListings(search, categoryFilter, subcategoryFilter, { sort, condition: conditionFilter, minPrice, maxPrice });
 
   if (error || !data) {
     return matchingDemoListings;
@@ -300,7 +369,17 @@ export async function getListings(query?: string, category?: string, subcategory
   const databaseListings = data.map((item) => normalizeListing(item as RawListing));
   const databaseIds = new Set(databaseListings.map((listing) => listing.id));
 
-  return [...databaseListings, ...matchingDemoListings.filter((listing) => !databaseIds.has(listing.id))];
+  return [...databaseListings, ...matchingDemoListings.filter((listing) => !databaseIds.has(listing.id))].sort((a, b) => {
+    if (sort === "price_asc") {
+      return a.price - b.price;
+    }
+
+    if (sort === "price_desc") {
+      return b.price - a.price;
+    }
+
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 }
 
 function conditionLabelsFallback(condition: ListingWithDetails["condition"]) {
@@ -467,7 +546,100 @@ export async function getOrderById(orderId: string): Promise<OrderWithDetails | 
   return normalizeOrder(data as unknown as RawOrder);
 }
 
-export async function getConversation(listingId: string): Promise<Conversation | null> {
+export async function getUnreadMessageCount() {
+  const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    return 0;
+  }
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return 0;
+  }
+
+  const { count } = await supabase
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .eq("receiver_id", user.id)
+    .eq("is_read", false);
+
+  return count ?? 0;
+}
+
+export async function getMessageThreads(): Promise<MessageThread[]> {
+  const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    return [];
+  }
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return [];
+  }
+
+  const { data } = await supabase
+    .from("messages")
+    .select(messageSelect)
+    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+    .order("created_at", { ascending: false })
+    .limit(200);
+
+  const messages = (data as unknown as Message[] | null) ?? [];
+  const threads = new Map<string, { lastMessage: Message; unreadCount: number; listingId: string; receiverId: string; acceptedOffer: PriceOffer | null }>();
+
+  for (const message of messages) {
+    const receiverId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
+    const key = `${message.listing_id}:${receiverId}`;
+    const current = threads.get(key);
+    const acceptedOffer = message.price_offer?.status === "accepted" ? message.price_offer : null;
+
+    if (!current) {
+      threads.set(key, {
+        lastMessage: message,
+        unreadCount: message.receiver_id === user.id && !message.is_read ? 1 : 0,
+        listingId: message.listing_id,
+        receiverId,
+        acceptedOffer
+      });
+    } else {
+      if (message.receiver_id === user.id && !message.is_read) {
+        current.unreadCount += 1;
+      }
+
+      if (!current.acceptedOffer && acceptedOffer) {
+        current.acceptedOffer = acceptedOffer;
+      }
+    }
+  }
+
+  const result: MessageThread[] = [];
+
+  for (const thread of threads.values()) {
+    const [listing, receiver] = await Promise.all([getListingById(thread.listingId), getProfileById(thread.receiverId)]);
+
+    if (listing && receiver) {
+      result.push({
+        listing,
+        receiver,
+        lastMessage: thread.lastMessage,
+        unreadCount: thread.unreadCount,
+        acceptedOffer: thread.acceptedOffer
+      });
+    }
+  }
+
+  return result.sort((a, b) => new Date(b.lastMessage.created_at).getTime() - new Date(a.lastMessage.created_at).getTime());
+}
+
+export async function getConversation(listingId: string, receiverIdOverride?: string): Promise<Conversation | null> {
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
@@ -498,29 +670,87 @@ export async function getConversation(listingId: string): Promise<Conversation |
     .maybeSingle();
 
   const order = (orderData as Order | null) ?? null;
+  const { data: offerData } = await supabase
+    .from("price_offers")
+    .select("id, listing_id, buyer_id, seller_id, original_price, proposed_price, status, created_at, updated_at")
+    .eq("listing_id", listingId)
+    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (listing.seller_id !== user.id && !order) {
+  const latestOffer = (offerData as PriceOffer | null) ?? null;
+
+  if (listing.seller_id !== user.id && !order && !latestOffer) {
     return null;
   }
 
-  const receiverId = listing.seller_id === user.id ? order?.buyer_id : listing.seller_id;
+  const receiverId = receiverIdOverride || (listing.seller_id === user.id ? order?.buyer_id ?? latestOffer?.buyer_id : listing.seller_id);
   const receiver = receiverId
     ? await getProfileById(receiverId)
     : null;
 
+  if (!receiver) {
+    return null;
+  }
+
+  await supabase
+    .from("messages")
+    .update({ is_read: true })
+    .eq("listing_id", listingId)
+    .eq("sender_id", receiver.id)
+    .eq("receiver_id", user.id)
+    .eq("is_read", false);
+
   const { data: messages } = await supabase
     .from("messages")
-    .select("id, listing_id, sender_id, receiver_id, text, is_read, created_at")
+    .select(messageSelect)
     .eq("listing_id", listingId)
-    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+    .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
     .order("created_at", { ascending: true });
+
+  const conversationMessages = (messages as unknown as Message[] | null) ?? [];
+  const acceptedOffer =
+    [...conversationMessages]
+      .reverse()
+      .map((message) => message.price_offer)
+      .find((offer): offer is PriceOffer => Boolean(offer && offer.status === "accepted")) ?? null;
 
   return {
     listing,
     order,
     receiver,
-    messages: (messages as Message[] | null) ?? []
+    messages: conversationMessages,
+    acceptedOffer
   };
+}
+
+export async function getAcceptedBuyerOfferForListing(listingId: string): Promise<PriceOffer | null> {
+  const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data } = await supabase
+    .from("price_offers")
+    .select("id, listing_id, buyer_id, seller_id, original_price, proposed_price, status, created_at, updated_at")
+    .eq("listing_id", listingId)
+    .eq("buyer_id", user.id)
+    .eq("status", "accepted")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return (data as PriceOffer | null) ?? null;
 }
 
 export async function getProfileById(id: string): Promise<Profile | null> {

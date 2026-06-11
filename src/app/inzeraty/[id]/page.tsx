@@ -4,10 +4,11 @@ import { Flag, MapPin, MessageCircle, MoreVertical, ShieldCheck, Star } from "lu
 import { clsx } from "clsx";
 import { Avatar } from "@/components/Avatar";
 import { ListingGallery } from "@/components/ListingGallery";
+import { PriceOfferModal } from "@/components/PriceOfferModal";
 import { SubmitButton } from "@/components/SubmitButton";
 import { startOrderAction } from "@/app/actions";
 import { conditionLabels, formatDate, formatPrice, formatRating } from "@/lib/format";
-import { getCurrentUserProfile, getListingById } from "@/lib/data";
+import { getAcceptedBuyerOfferForListing, getCurrentUserProfile, getListingById } from "@/lib/data";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -19,6 +20,7 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
   const { chyba } = await searchParams;
   const listing = await getListingById(id);
   const { user } = await getCurrentUserProfile();
+  const acceptedOffer = user ? await getAcceptedBuyerOfferForListing(id) : null;
 
   if (!listing) {
     notFound();
@@ -26,14 +28,15 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
 
   const isOwner = user?.id === listing.seller_id;
   const canOrder = listing.status === "active" && !isOwner;
+  const effectivePrice = acceptedOffer?.proposed_price ?? listing.price;
   const images = listing.images.length > 0 ? listing.images : [];
   const breadcrumbItems = [listing.category, listing.subcategory, listing.seller.display_name];
 
   return (
-    <div className="mx-auto max-w-[1500px] px-4 py-4 sm:px-5 md:px-6 md:py-5">
+    <div className="mx-auto max-w-[1800px] px-4 py-4 sm:px-5 md:px-8 md:py-6">
       {chyba ? <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{chyba}</div> : null}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px] xl:grid-cols-[minmax(0,1fr)_450px] lg:items-start">
         <div className="min-w-0">
           <ListingGallery images={images} title={listing.title} />
 
@@ -66,12 +69,15 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
           </div>
 
           <div className="mt-5">
-            <p className="text-[15px] text-zinc-500">{Math.max(0, Math.round(listing.price * 0.7)).toLocaleString("cs-CZ")} Kč</p>
-            <p className="text-3xl font-black text-moss">{formatPrice(listing.price)}</p>
+            {acceptedOffer ? <p className="text-[15px] text-zinc-500 line-through">{formatPrice(listing.price)}</p> : null}
+            <p className="text-3xl font-black text-moss">{formatPrice(effectivePrice)}</p>
             <div className="mt-2 flex items-start gap-2 text-base text-moss">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               Zahrnuje ochranu kupujících
             </div>
+            {acceptedOffer ? (
+              <p className="mt-2 rounded-lg bg-[#fff7df] px-3 py-2 text-sm font-semibold text-moss">Prodávající přijal vaši nabídku ceny.</p>
+            ) : null}
             <p className="mt-3 text-[15px] leading-6 text-zinc-600">Cena předmětu a relevantní poplatky jsou přepočteny na vaši měnu.</p>
           </div>
 
@@ -144,12 +150,7 @@ export default async function ListingDetailPage({ params, searchParams }: PagePr
                     Koupit
                   </SubmitButton>
                 </form>
-                <button
-                  type="button"
-                  className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-moss bg-white px-5 py-3 text-base font-bold text-moss hover:bg-[#fff7df]"
-                >
-                  Nabídnout cenu
-                </button>
+                <PriceOfferModal listingId={listing.id} title={listing.title} price={listing.price} imageUrl={images[0]?.image_url} />
                 <button
                   type="button"
                   className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-moss bg-white px-5 py-3 text-base font-bold text-moss hover:bg-[#fff7df]"

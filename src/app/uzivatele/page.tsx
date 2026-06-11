@@ -15,25 +15,25 @@ export default async function UsersPage({ searchParams }: PageProps) {
   const profiles = await searchProfiles(query);
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-6 md:px-6 md:py-10">
+    <div className="mx-auto max-w-[1800px] px-4 py-6 sm:px-5 md:px-8 md:py-10">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-moss">Uživatelé</p>
+          <p className="text-base font-semibold uppercase tracking-wide text-moss">Uživatelé</p>
           <h1 className="mt-1 text-3xl font-black text-ink">{query ? `Uživatelé pro „${query}“` : "Uživatelé"}</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-600">
+          <p className="mt-2 max-w-2xl text-base leading-7 text-zinc-600">
             {query
               ? "Hledáme podle zobrazovaného jména a města. Profil otevřete pro přehled aktivních nabídek."
               : "Najděte prodejce a zobrazte si jejich aktivní nabídky."}
           </p>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-semibold text-zinc-700">
+        <div className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-base font-semibold text-zinc-700">
           <Search className="h-4 w-4" aria-hidden="true" />
           Hledání uživatelů
         </div>
       </div>
 
       {profiles.length > 0 ? (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {profiles.map((profile) => (
             <Link
               key={profile.id}
