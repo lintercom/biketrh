@@ -16,7 +16,7 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
   const mainImage = listing.images[0]?.image_url;
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-lg border border-line bg-white shadow-soft">
+    <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-line bg-white shadow-soft">
       <Link href={`/inzeraty/${listing.id}`} className="block">
         <div className="relative aspect-[4/3] bg-fog">
           {mainImage ? (
@@ -29,10 +29,10 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
         </div>
       </Link>
 
-      <div className="space-y-4 p-4 sm:p-5">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex min-w-0 items-start justify-between gap-3">
-          <div className="min-w-0">
-            <Link href={`/inzeraty/${listing.id}`} className="line-clamp-2 text-base font-semibold leading-6 text-ink hover:text-moss sm:text-lg">
+          <div className="min-w-0 flex-1">
+            <Link href={`/inzeraty/${listing.id}`} className="line-clamp-2 min-h-12 text-base font-semibold leading-6 text-ink hover:text-moss sm:min-h-[3.5rem] sm:text-lg">
               {listing.title}
             </Link>
             <p className="mt-2 text-xl font-black text-ink">{formatPrice(listing.price)}</p>
@@ -44,12 +44,12 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
           ) : null}
         </div>
 
-        <div className="flex min-w-0 items-center gap-2 text-base text-zinc-600">
+        <div className="mt-4 flex min-w-0 items-center gap-2 text-base text-zinc-600">
           <MapPin className="h-5 w-5 shrink-0" aria-hidden="true" />
           <span className="min-w-0 truncate">{listing.location}</span>
         </div>
 
-        <Link href={`/uzivatel/${listing.seller.id}`} className="flex min-w-0 items-center gap-2.5 text-base">
+        <Link href={`/uzivatel/${listing.seller.id}`} className="mt-auto flex min-w-0 items-center gap-2.5 pt-4 text-base">
           <Avatar profile={listing.seller} size="sm" />
           <span className="min-w-0 flex-1 truncate text-zinc-700">{listing.seller.display_name}</span>
           <span className="inline-flex shrink-0 items-center gap-1 text-zinc-600">
@@ -58,7 +58,7 @@ export function ListingCard({ listing, showStatus = false, actions }: ListingCar
           </span>
         </Link>
 
-        {actions ? <div className="pt-1">{actions}</div> : null}
+        {actions ? <div className="pt-4">{actions}</div> : null}
       </div>
     </article>
   );
