@@ -15,7 +15,8 @@ export function ListingGallery({ images, title }: ListingGalleryProps) {
   const hasThreePhotoLayout = images.length >= 3;
   const mainImage = images[0];
   const secondaryImages = hasThreePhotoLayout ? images.slice(1, 3) : [];
-  const thumbnailImages = hasThreePhotoLayout ? images.slice(3) : images.slice(1);
+  const desktopThumbnailImages = hasThreePhotoLayout ? images.slice(3) : images.slice(1);
+  const mobileThumbnailImages = images.slice(1);
   const selectedImage = selectedIndex === null ? null : images[selectedIndex];
   const selectedPhotoNumber = selectedIndex === null ? 0 : selectedIndex + 1;
 
@@ -57,8 +58,18 @@ export function ListingGallery({ images, title }: ListingGalleryProps) {
 
   return (
     <section>
+      <div className="md:hidden">
+        <div className="overflow-hidden rounded-lg">
+          <GalleryButton image={mainImage} title={title} index={0} priority className="min-h-[320px]" onOpen={openImage} />
+        </div>
+
+        {mobileThumbnailImages.length > 0 ? (
+          <ThumbnailGrid images={mobileThumbnailImages} allImages={images} title={title} onOpen={openImage} className="grid-cols-3 sm:grid-cols-4" />
+        ) : null}
+      </div>
+
       {hasThreePhotoLayout ? (
-        <div className="grid gap-1 overflow-hidden rounded-lg md:grid-cols-2">
+        <div className="hidden gap-1 overflow-hidden rounded-lg md:grid md:grid-cols-2">
           <GalleryButton image={mainImage} title={title} index={0} priority className="min-h-[320px] md:min-h-[620px]" onOpen={openImage} />
 
           <div className="grid gap-1">
@@ -75,29 +86,13 @@ export function ListingGallery({ images, title }: ListingGalleryProps) {
           </div>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg">
+        <div className="hidden overflow-hidden rounded-lg md:block">
           <GalleryButton image={mainImage} title={title} index={0} priority className="min-h-[320px] md:min-h-[620px]" onOpen={openImage} />
         </div>
       )}
 
-      {thumbnailImages.length > 0 ? (
-        <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-          {thumbnailImages.map((image) => {
-            const imageIndex = images.findIndex((item) => item.id === image.id);
-
-            return (
-              <button
-                key={image.id}
-                type="button"
-                onClick={() => openImage(imageIndex)}
-                className="relative aspect-square overflow-hidden rounded-lg border border-line bg-fog focus:outline-none focus:ring-2 focus:ring-moss"
-                aria-label={`Zobrazit fotografii ${imageIndex + 1}`}
-              >
-                <Image src={image.image_url} alt={`${title} - fotografie ${imageIndex + 1}`} fill sizes="120px" className="object-cover" />
-              </button>
-            );
-          })}
-        </div>
+      {desktopThumbnailImages.length > 0 ? (
+        <ThumbnailGrid images={desktopThumbnailImages} allImages={images} title={title} onOpen={openImage} className="hidden md:grid md:grid-cols-6" />
       ) : null}
 
       {selectedImage ? (
@@ -145,6 +140,40 @@ export function ListingGallery({ images, title }: ListingGalleryProps) {
         </div>
       ) : null}
     </section>
+  );
+}
+
+function ThumbnailGrid({
+  images,
+  allImages,
+  title,
+  className,
+  onOpen
+}: {
+  images: ListingImage[];
+  allImages: ListingImage[];
+  title: string;
+  className: string;
+  onOpen: (index: number) => void;
+}) {
+  return (
+    <div className={`mt-3 gap-2 ${className}`}>
+      {images.map((image) => {
+        const imageIndex = allImages.findIndex((item) => item.id === image.id);
+
+        return (
+          <button
+            key={image.id}
+            type="button"
+            onClick={() => onOpen(imageIndex)}
+            className="relative aspect-square overflow-hidden rounded-lg border border-line bg-fog focus:outline-none focus:ring-2 focus:ring-moss"
+            aria-label={`Zobrazit fotografii ${imageIndex + 1}`}
+          >
+            <Image src={image.image_url} alt={`${title} - fotografie ${imageIndex + 1}`} fill sizes="120px" className="object-cover" />
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
